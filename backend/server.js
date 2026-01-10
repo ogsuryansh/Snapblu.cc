@@ -22,11 +22,20 @@ import adminRoutes from './routes/adminRoutes.js';
 
 import depositRoutes from './routes/depositRoutes.js';
 
+import settingRoutes from './routes/settingRoutes.js';
+import transactionRoutes from './routes/transactionRoutes.js';
+import orderRoutes from './routes/orderRoutes.js';
+import ticketRoutes from './routes/ticketRoutes.js';
+
 // Routes
 app.use('/api/users', userRoutes);
 app.use('/api/products', productRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/api/deposits', depositRoutes);
+app.use('/api/settings', settingRoutes);
+app.use('/api/transactions', transactionRoutes);
+app.use('/api/orders', orderRoutes);
+app.use('/api/tickets', ticketRoutes);
 
 app.get('/', (req, res) => {
   res.json({ message: 'Welcome to CCWeb Backend API' });

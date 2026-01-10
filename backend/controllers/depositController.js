@@ -1,6 +1,7 @@
 import asyncHandler from 'express-async-handler';
 import Deposit from '../models/depositModel.js';
 import User from '../models/userModel.js';
+import Transaction from '../models/transactionModel.js';
 
 // @desc    Create new deposit request
 // @route   POST /api/deposits
@@ -11,6 +12,11 @@ const createDeposit = asyncHandler(async (req, res) => {
     if (!amount || !transactionId) {
         res.status(400);
         throw new Error('Please provide amount and transaction ID');
+    }
+
+    if (amount < 10) {
+        res.status(400);
+        throw new Error('Minimum deposit amount is $10');
     }
 
     const deposit = new Deposit({
@@ -58,12 +64,25 @@ const updateDepositStatus = asyncHandler(async (req, res) => {
     deposit.status = status;
     await deposit.save();
 
-    // If Approved, Add Balance to User
+    // If Approved, Add Balance to User AND Create Transaction Log
     if (status === 'approved') {
         const user = await User.findById(deposit.user);
         if (user) {
             user.balance = (user.balance || 0) + deposit.amount;
             await user.save();
+
+            // Create Transaction Record
+            try {
+                await Transaction.create({
+                    user: user._id,
+                    type: 'deposit',
+                    amount: deposit.amount,
+                    description: `Deposit Approved (${deposit.method}) - TXID: ${deposit.transactionId}`,
+                    status: 'completed'
+                });
+            } catch (error) {
+                console.error("Failed to create transaction log:", error);
+            }
         }
     }
 

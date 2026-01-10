@@ -18,7 +18,9 @@ import VerifyEmail from './pages/VerifyEmail';
 import ChangePassword from './pages/ChangePassword';
 import Deposit from './pages/Deposit';
 import MyDeposits from './pages/MyDeposits';
+import Transactions from './pages/Transactions';
 import Tickets from './pages/Tickets';
+import TicketDetails from './pages/TicketDetails'; // Import Added
 import ProtectedRoute from './components/common/ProtectedRoute';
 import AdminProtectedRoute from './components/common/AdminProtectedRoute';
 import AdminLogin from './pages/admin/AdminLogin';
@@ -27,6 +29,7 @@ import AdminDashboard from './pages/admin/AdminDashboard';
 import UserList from './pages/admin/UserList';
 import AdminProducts from './pages/admin/AdminProducts';
 import AdminDeposits from './pages/admin/AdminDeposits';
+import AdminSettings from './pages/admin/AdminSettings';
 
 function App() {
   return (
@@ -47,6 +50,7 @@ function App() {
               <Route path="users" element={<UserList />} />
               <Route path="products" element={<AdminProducts />} />
               <Route path="deposits" element={<AdminDeposits />} />
+              <Route path="settings" element={<AdminSettings />} />
             </Route>
           </Route>
 
@@ -64,7 +68,9 @@ function App() {
               <Route path="my-bulk-purchases" element={<MyBulkPurchases />} />
               <Route path="deposit" element={<Deposit />} />
               <Route path="my-deposits" element={<MyDeposits />} />
+              <Route path="transactions" element={<Transactions />} />
               <Route path="tickets" element={<Tickets />} />
+              <Route path="tickets/:id" element={<TicketDetails />} />
               <Route path="change-password" element={<ChangePassword />} />
               <Route path="bin-checker" element={<BinChecker />} />
               <Route path="card-checker" element={<CardChecker />} />

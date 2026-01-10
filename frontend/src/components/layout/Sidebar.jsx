@@ -16,6 +16,7 @@ import {
     Key,
     MoreVertical,
     LogOut,
+    Activity // Added
 } from 'lucide-react';
 import { useState, useRef, useEffect } from 'react';
 
@@ -117,6 +118,7 @@ const Sidebar = () => {
             items: [
                 { name: 'Deposit Money', icon: CreditCard, path: '/deposit' },
                 { name: 'My Deposits', icon: FileText, path: '/my-deposits' },
+                { name: 'Transactions', icon: Activity, path: '/transactions' },
             ],
         },
         {
