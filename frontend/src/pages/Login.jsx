@@ -1,18 +1,48 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Eye, EyeOff, ShieldCheck, CheckCircle2 } from 'lucide-react';
-import Button from '../components/common/Button';
+import axios from 'axios';
 
 const Login = () => {
     const navigate = useNavigate();
     const [showPassword, setShowPassword] = useState(false);
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState(null);
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
-        // Mock login
-        navigate('/dashboard');
+        setError(null);
+        setLoading(true);
+
+        try {
+            const config = {
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+            };
+
+            const { data } = await axios.post(
+                'http://localhost:5000/api/users/login',
+                { email, password },
+                config
+            );
+
+            // Save user info and token to localStorage
+            localStorage.setItem('userInfo', JSON.stringify(data));
+
+            // Redirect to dashboard
+            setLoading(false);
+            navigate('/dashboard');
+        } catch (err) {
+            setLoading(false);
+            setError(
+                err.response && err.response.data.message
+                    ? err.response.data.message
+                    : err.message
+            );
+        }
     };
 
     return (
@@ -40,6 +70,12 @@ const Login = () => {
                         <h1 className="text-3xl font-bold tracking-tight">Login to your account</h1>
                         <p className="text-gray-400">Enter your email below to login to your account</p>
                     </div>
+
+                    {error && (
+                        <div className="p-4 bg-red-500/10 border border-red-500/50 rounded-lg text-red-500 text-sm">
+                            {error}
+                        </div>
+                    )}
 
                     <form onSubmit={handleSubmit} className="space-y-6">
                         <div className="space-y-2">
@@ -110,9 +146,14 @@ const Login = () => {
 
                         <button
                             type="submit"
-                            className="w-full bg-white text-black font-bold py-3 rounded-lg hover:bg-gray-200 transition-colors"
+                            disabled={loading}
+                            className="w-full bg-white text-black font-bold py-3 rounded-lg hover:bg-gray-200 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
                         >
-                            Login
+                            {loading ? (
+                                <div className="w-5 h-5 border-2 border-black border-t-transparent rounded-full animate-spin"></div>
+                            ) : (
+                                "Login"
+                            )}
                         </button>
 
                         <div className="text-center text-sm text-gray-400">

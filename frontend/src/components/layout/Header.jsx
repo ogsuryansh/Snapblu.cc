@@ -4,7 +4,9 @@ import { useTheme } from '../../contexts/ThemeContext';
 
 const Header = ({ onMenuToggle }) => {
     const { isDark, toggleTheme } = useTheme();
-    const balance = 0.0;
+    // Get user info
+    const userInfo = JSON.parse(localStorage.getItem('userInfo')) || {};
+    const balance = userInfo.balance || 0.00;
 
     return (
         <header className="bg-white dark:bg-dark-bg border-b border-gray-200 dark:border-dark-border sticky top-0 z-40 transition-colors">

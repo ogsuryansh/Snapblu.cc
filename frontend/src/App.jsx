@@ -14,33 +14,58 @@ import CardChecker from './pages/CardChecker';
 import ComponentShowcase from './pages/ComponentShowcase';
 import Login from './pages/Login';
 import Register from './pages/Register';
+import VerifyEmail from './pages/VerifyEmail';
 import ChangePassword from './pages/ChangePassword';
 import Deposit from './pages/Deposit';
 import MyDeposits from './pages/MyDeposits';
+import Tickets from './pages/Tickets';
+import ProtectedRoute from './components/common/ProtectedRoute';
+import AdminProtectedRoute from './components/common/AdminProtectedRoute';
+import AdminLogin from './pages/admin/AdminLogin';
+import AdminLayout from './pages/admin/AdminLayout';
+import AdminDashboard from './pages/admin/AdminDashboard';
+import UserList from './pages/admin/UserList';
 
 function App() {
   return (
     <ThemeProvider>
       <Router>
         <Routes>
+          {/* Public Routes */}
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
-          <Route path="/" element={<Layout />}>
-            <Route index element={<Navigate to="/dashboard" replace />} />
-            <Route path="dashboard" element={<Home />} />
-            <Route path="buy-cards" element={<BuyCards />} />
-            <Route path="bulk-cards" element={<BulkCards />} />
-            <Route path="buy-logs" element={<BuyLogs />} />
-            <Route path="my-orders" element={<MyOrders />} />
-            <Route path="my-card-orders" element={<MyCardOrders />} />
-            <Route path="my-log-orders" element={<MyLogOrders />} />
-            <Route path="my-bulk-purchases" element={<MyBulkPurchases />} />
-            <Route path="deposit" element={<Deposit />} />
-            <Route path="my-deposits" element={<MyDeposits />} />
-            <Route path="change-password" element={<ChangePassword />} />
-            <Route path="bin-checker" element={<BinChecker />} />
-            <Route path="card-checker" element={<CardChecker />} />
-            <Route path="components" element={<ComponentShowcase />} />
+          <Route path="/verify-email/:token" element={<VerifyEmail />} />
+
+          {/* Admin Routes */}
+          <Route path="/admin/login" element={<AdminLogin />} />
+          <Route element={<AdminProtectedRoute />}>
+            <Route path="/admin" element={<AdminLayout />}>
+              <Route index element={<Navigate to="/admin/dashboard" replace />} />
+              <Route path="dashboard" element={<AdminDashboard />} />
+              <Route path="users" element={<UserList />} />
+            </Route>
+          </Route>
+
+          {/* Protected Routes */}
+          <Route element={<ProtectedRoute />}>
+            <Route path="/" element={<Layout />}>
+              <Route index element={<Navigate to="/dashboard" replace />} />
+              <Route path="dashboard" element={<Home />} />
+              <Route path="buy-cards" element={<BuyCards />} />
+              <Route path="bulk-cards" element={<BulkCards />} />
+              <Route path="buy-logs" element={<BuyLogs />} />
+              <Route path="my-orders" element={<MyOrders />} />
+              <Route path="my-card-orders" element={<MyCardOrders />} />
+              <Route path="my-log-orders" element={<MyLogOrders />} />
+              <Route path="my-bulk-purchases" element={<MyBulkPurchases />} />
+              <Route path="deposit" element={<Deposit />} />
+              <Route path="my-deposits" element={<MyDeposits />} />
+              <Route path="tickets" element={<Tickets />} />
+              <Route path="change-password" element={<ChangePassword />} />
+              <Route path="bin-checker" element={<BinChecker />} />
+              <Route path="card-checker" element={<CardChecker />} />
+              <Route path="components" element={<ComponentShowcase />} />
+            </Route>
           </Route>
         </Routes>
       </Router>

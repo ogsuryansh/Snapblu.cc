@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Eye, EyeOff, ShieldCheck, CheckCircle2 } from 'lucide-react';
+import { Eye, EyeOff, ShieldCheck, Mail, CheckCircle2 } from 'lucide-react';
+import axios from 'axios';
 
 const Register = () => {
     const navigate = useNavigate();
@@ -13,11 +14,73 @@ const Register = () => {
     const [password, setPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
 
-    const handleSubmit = (e) => {
+    // UI state
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState(null);
+    const [success, setSuccess] = useState(false);
+
+    const handleSubmit = async (e) => {
         e.preventDefault();
-        // Mock registration
-        navigate('/login');
+        setError(null);
+
+        // Validation
+        if (password !== confirmPassword) {
+            setError("Passwords do not match");
+            return;
+        }
+
+        setLoading(true);
+
+        try {
+            const config = {
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+            };
+
+            await axios.post(
+                'http://localhost:5000/api/users',
+                { username, email, password },
+                config
+            );
+
+            setSuccess(true);
+            setLoading(false);
+        } catch (err) {
+            setLoading(false);
+            setError(err.response && err.response.data.message
+                ? err.response.data.message
+                : err.message);
+        }
     };
+
+    // If registration is successful, show the success state
+    if (success) {
+        return (
+            <div className="min-h-screen w-full flex bg-black text-white items-center justify-center p-4">
+                <div className="max-w-md w-full bg-[#111] border border-[#333] rounded-2xl p-8 text-center space-y-6">
+                    <div className="w-20 h-20 bg-green-500/10 rounded-full flex items-center justify-center mx-auto">
+                        <Mail size={40} className="text-green-500" />
+                    </div>
+                    <div>
+                        <h2 className="text-2xl font-bold mb-2">Check your email</h2>
+                        <p className="text-gray-400">
+                            We've sent a verification link to <span className="text-white font-medium">{email}</span>.
+                        </p>
+                        <p className="text-gray-400 mt-2">
+                            Please check your inbox (and spam folder) to activate your account.
+                        </p>
+                    </div>
+                    <Link
+                        to="/login"
+                        className="block w-full bg-white text-black font-bold py-3 rounded-lg hover:bg-gray-200 transition-colors"
+                    >
+                        Return to Login
+                    </Link>
+                </div>
+            </div>
+        );
+    }
 
     return (
         <div className="min-h-screen w-full flex bg-black text-white">
@@ -44,6 +107,12 @@ const Register = () => {
                         <h1 className="text-3xl font-bold tracking-tight">Create an account</h1>
                         <p className="text-gray-400">Enter your details below to create your account</p>
                     </div>
+
+                    {error && (
+                        <div className="p-4 bg-red-500/10 border border-red-500/50 rounded-lg text-red-500 text-sm">
+                            {error}
+                        </div>
+                    )}
 
                     <form onSubmit={handleSubmit} className="space-y-5">
                         <div className="space-y-2">
@@ -137,9 +206,14 @@ const Register = () => {
 
                         <button
                             type="submit"
-                            className="w-full bg-white text-black font-bold py-3 rounded-lg hover:bg-gray-200 transition-colors"
+                            disabled={loading}
+                            className="w-full bg-white text-black font-bold py-3 rounded-lg hover:bg-gray-200 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
                         >
-                            Create Account
+                            {loading ? (
+                                <div className="w-5 h-5 border-2 border-black border-t-transparent rounded-full animate-spin"></div>
+                            ) : (
+                                "Create Account"
+                            )}
                         </button>
 
                         <div className="text-center text-sm text-gray-400">

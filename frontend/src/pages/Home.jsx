@@ -96,20 +96,20 @@ const Home = () => {
     return (
         <div>
             {/* Header */}
-            <div className="mb-6">
-                <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">Dashboard</h1>
-                <p className="text-gray-600 dark:text-gray-400">Overview of your account activity and statistics</p>
+            <div className="mb-4">
+                <h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-1">Dashboard</h1>
+                <p className="text-sm text-gray-600 dark:text-gray-400">Overview of your account activity and statistics</p>
             </div>
 
             {/* Tabs */}
-            <div className="flex gap-4 mb-6">
+            <div className="flex gap-2 mb-4">
                 {tabs.map((tab) => (
                     <button
                         key={tab.id}
                         onClick={() => setActiveTab(tab.id)}
-                        className={`px-6 py-3 rounded-lg font-medium transition-all ${activeTab === tab.id
-                                ? 'bg-gray-900 dark:bg-white text-white dark:text-black'
-                                : 'bg-gray-100 dark:bg-dark-card text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-dark-hover hover:text-gray-900 dark:hover:text-gray-200'
+                        className={`px-4 py-2 rounded-md font-medium text-sm transition-all ${activeTab === tab.id
+                            ? 'bg-gray-900 dark:bg-white text-white dark:text-black'
+                            : 'bg-gray-100 dark:bg-dark-card text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-dark-hover hover:text-gray-900 dark:hover:text-gray-200'
                             }`}
                     >
                         {tab.label}
@@ -119,22 +119,22 @@ const Home = () => {
 
             {/* Stats Grid */}
             {activeTab === 'overview' && (
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                     {overviewStats.slice(0, 4).map((stat, idx) => (
                         <div
                             key={idx}
-                            className={`card ${stat.borderColor} hover:shadow-lg transition-shadow`}
+                            className={`card ${stat.borderColor} hover:shadow-md transition-shadow`}
                         >
-                            <div className="p-6">
-                                <div className="flex items-start justify-between mb-4">
-                                    <h3 className="text-sm font-medium text-gray-500 dark:text-gray-400">{stat.title}</h3>
-                                    <div className={`p-2 rounded-lg ${stat.iconBg}`}>
-                                        <stat.icon size={20} className={stat.iconColor} />
+                            <div className="p-4">
+                                <div className="flex items-start justify-between mb-2">
+                                    <h3 className="text-xs font-medium text-gray-500 dark:text-gray-400">{stat.title}</h3>
+                                    <div className={`p-1.5 rounded-lg ${stat.iconBg}`}>
+                                        <stat.icon size={16} className={stat.iconColor} />
                                     </div>
                                 </div>
-                                <div className="space-y-1">
-                                    <p className="text-2xl font-bold text-gray-900 dark:text-white">{stat.value}</p>
-                                    <p className="text-xs text-gray-500 dark:text-gray-500">{stat.subtitle}</p>
+                                <div className="space-y-0.5">
+                                    <p className="text-xl font-bold text-gray-900 dark:text-white">{stat.value}</p>
+                                    <p className="text-[10px] text-gray-500 dark:text-gray-500">{stat.subtitle}</p>
                                 </div>
                             </div>
                         </div>
@@ -144,32 +144,32 @@ const Home = () => {
                     {overviewStats.slice(4).map((stat, idx) => (
                         <div
                             key={idx}
-                            className={`card ${stat.borderColor} hover:shadow-lg transition-shadow ${stat.isStatusCard ? 'lg:col-span-2' : ''
+                            className={`card ${stat.borderColor} hover:shadow-md transition-shadow ${stat.isStatusCard ? 'lg:col-span-2' : ''
                                 }`}
                         >
-                            <div className="p-6">
-                                <div className="flex items-start justify-between mb-4">
-                                    <h3 className="text-sm font-medium text-gray-500 dark:text-gray-400">{stat.title}</h3>
-                                    <div className={`p-2 rounded-lg ${stat.iconBg}`}>
-                                        <stat.icon size={20} className={stat.iconColor} />
+                            <div className="p-4">
+                                <div className="flex items-start justify-between mb-2">
+                                    <h3 className="text-xs font-medium text-gray-500 dark:text-gray-400">{stat.title}</h3>
+                                    <div className={`p-1.5 rounded-lg ${stat.iconBg}`}>
+                                        <stat.icon size={16} className={stat.iconColor} />
                                     </div>
                                 </div>
 
                                 {stat.isStatusCard ? (
-                                    <div className="space-y-3">
+                                    <div className="space-y-2">
                                         {stat.statusData.map((status, statusIdx) => (
                                             <div key={statusIdx} className="flex items-center justify-between">
-                                                <span className="text-sm text-gray-600 dark:text-gray-400">{status.label}</span>
-                                                <span className={`text-lg font-semibold ${status.color}`}>
+                                                <span className="text-xs text-gray-600 dark:text-gray-400">{status.label}</span>
+                                                <span className={`text-sm font-semibold ${status.color}`}>
                                                     {status.value}
                                                 </span>
                                             </div>
                                         ))}
                                     </div>
                                 ) : (
-                                    <div className="space-y-1">
-                                        <p className="text-2xl font-bold text-gray-900 dark:text-white">{stat.value}</p>
-                                        <p className="text-xs text-gray-500 dark:text-gray-500">{stat.subtitle}</p>
+                                    <div className="space-y-0.5">
+                                        <p className="text-xl font-bold text-gray-900 dark:text-white">{stat.value}</p>
+                                        <p className="text-[10px] text-gray-500 dark:text-gray-500">{stat.subtitle}</p>
                                     </div>
                                 )}
                             </div>
