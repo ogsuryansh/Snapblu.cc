@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
-import { Trash2, Shield, ShieldAlert } from 'lucide-react';
+import { Trash2, Shield, ShieldAlert, Edit, X } from 'lucide-react';
 import API_URL from '../../config/api';
 
 const UserList = () => {
@@ -53,8 +53,102 @@ const UserList = () => {
         }
     };
 
+    // Balance editing state
+    const [editingUser, setEditingUser] = useState(null);
+    const [newBalance, setNewBalance] = useState('');
+
+    const handleEditBalance = (user) => {
+        setEditingUser(user);
+        setNewBalance(user.balance.toString());
+    };
+
+    const handleUpdateBalance = async () => {
+        if (!editingUser) return;
+
+        const balance = parseFloat(newBalance);
+        if (isNaN(balance) || balance < 0) {
+            alert('Please enter a valid positive number');
+            return;
+        }
+
+        try {
+            const adminInfo = JSON.parse(localStorage.getItem('adminInfo'));
+            const config = {
+                headers: {
+                    Authorization: `Bearer ${adminInfo.token}`,
+                },
+            };
+
+            await axios.put(`${API_URL}/api/users/${editingUser._id}/balance`, { balance }, config);
+
+            // Update local state
+            setUsers(users.map(u =>
+                u._id === editingUser._id ? { ...u, balance } : u
+            ));
+            setEditingUser(null);
+            alert('Balance updated successfully');
+        } catch (err) {
+            alert(err.response?.data?.message || 'Failed to update balance');
+        }
+    };
+
     return (
         <div className="p-8">
+            {/* Balance Edit Modal */}
+            {editingUser && (
+                <div className="fixed inset-0 bg-black/80 z-50 flex items-center justify-center p-4 backdrop-blur-sm">
+                    <div className="bg-slate-800 rounded-xl shadow-2xl max-w-md w-full p-6 border border-slate-700">
+                        <div className="flex justify-between items-center mb-6">
+                            <h2 className="text-xl font-bold text-white">Edit User Balance</h2>
+                            <button
+                                onClick={() => setEditingUser(null)}
+                                className="text-slate-400 hover:text-white transition-colors"
+                            >
+                                <X size={24} />
+                            </button>
+                        </div>
+
+                        <div className="mb-6">
+                            <p className="text-slate-400 text-sm mb-4">
+                                User: <span className="text-white font-medium">{editingUser.username}</span>
+                            </p>
+                            <p className="text-slate-400 text-sm mb-4">
+                                Current Balance: <span className="text-green-400 font-bold">${editingUser.balance.toFixed(2)}</span>
+                            </p>
+
+                            <label className="block text-sm font-medium text-slate-300 mb-2">
+                                New Balance ($)
+                            </label>
+                            <input
+                                type="number"
+                                step="0.01"
+                                min="0"
+                                value={newBalance}
+                                onChange={(e) => setNewBalance(e.target.value)}
+                                className="w-full bg-slate-900 border border-slate-600 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+                                placeholder="0.00"
+                                autoFocus
+                            />
+                        </div>
+
+                        <div className="flex gap-3">
+                            <button
+                                onClick={() => setEditingUser(null)}
+                                className="flex-1 bg-slate-700 hover:bg-slate-600 text-white font-medium py-3 rounded-lg transition-colors"
+                            >
+                                Cancel
+                            </button>
+                            <button
+                                onClick={handleUpdateBalance}
+                                className="flex-1 bg-blue-600 hover:bg-blue-500 text-white font-bold py-3 rounded-lg transition-colors"
+                            >
+                                Update Balance
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
+
             <div className="flex justify-between items-center mb-8">
                 <h1 className="text-2xl font-bold text-white">User Management</h1>
                 <div className="bg-blue-600/20 text-blue-400 border border-blue-600/30 px-4 py-2 rounded-lg text-sm font-medium">
@@ -108,8 +202,12 @@ const UserList = () => {
                                         </td>
                                         <td className="px-6 py-4 text-right">
                                             <div className="flex items-center justify-end gap-2">
-                                                <button className="p-2 text-slate-400 hover:text-blue-400 hover:bg-blue-500/10 rounded-lg transition-colors" title="Edit">
-                                                    <ShieldAlert size={16} />
+                                                <button
+                                                    onClick={() => handleEditBalance(user)}
+                                                    className="p-2 text-slate-400 hover:text-blue-400 hover:bg-blue-500/10 rounded-lg transition-colors"
+                                                    title="Edit Balance"
+                                                >
+                                                    <Edit size={16} />
                                                 </button>
                                                 <button
                                                     onClick={() => handleDeleteUser(user._id, user.username)}

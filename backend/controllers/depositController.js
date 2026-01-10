@@ -64,28 +64,6 @@ const updateDepositStatus = asyncHandler(async (req, res) => {
     deposit.status = status;
     await deposit.save();
 
-    // If Approved, Add Balance to User AND Create Transaction Log
-    if (status === 'approved') {
-        const user = await User.findById(deposit.user);
-        if (user) {
-            user.balance = (user.balance || 0) + deposit.amount;
-            await user.save();
-
-            // Create Transaction Record
-            try {
-                await Transaction.create({
-                    user: user._id,
-                    type: 'deposit',
-                    amount: deposit.amount,
-                    description: `Deposit Approved (${deposit.method}) - TXID: ${deposit.transactionId}`,
-                    status: 'completed'
-                });
-            } catch (error) {
-                console.error("Failed to create transaction log:", error);
-            }
-        }
-    }
-
     res.json(deposit);
 });
 

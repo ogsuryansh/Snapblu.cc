@@ -228,5 +228,28 @@ const deleteUser = asyncHandler(async (req, res) => {
     }
 });
 
-export { authUser, registerUser, verifyEmail, getUsers, deleteUser };
+// @desc    Update user balance
+// @route   PUT /api/users/:id/balance
+// @access  Private/Admin
+const updateUserBalance = asyncHandler(async (req, res) => {
+    const { balance } = req.body;
+    const user = await User.findById(req.params.id);
+
+    if (!user) {
+        res.status(404);
+        throw new Error('User not found');
+    }
+
+    if (typeof balance !== 'number' || balance < 0) {
+        res.status(400);
+        throw new Error('Invalid balance amount');
+    }
+
+    user.balance = balance;
+    await user.save();
+
+    res.json({ message: 'Balance updated successfully', user });
+});
+
+export { authUser, registerUser, verifyEmail, getUsers, deleteUser, updateUserBalance };
 
