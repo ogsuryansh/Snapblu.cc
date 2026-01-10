@@ -251,5 +251,19 @@ const updateUserBalance = asyncHandler(async (req, res) => {
     res.json({ message: 'Balance updated successfully', user });
 });
 
-export { authUser, registerUser, verifyEmail, getUsers, deleteUser, updateUserBalance };
+// @desc    Get current user details
+// @route   GET /api/users/me
+// @access  Private
+const getCurrentUser = asyncHandler(async (req, res) => {
+    const user = await User.findById(req.user._id).select('-password');
+
+    if (user) {
+        res.json(user);
+    } else {
+        res.status(404);
+        throw new Error('User not found');
+    }
+});
+
+export { authUser, registerUser, verifyEmail, getUsers, deleteUser, updateUserBalance, getCurrentUser };
 

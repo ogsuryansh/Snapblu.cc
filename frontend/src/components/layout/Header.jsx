@@ -1,12 +1,42 @@
 import { Link } from 'react-router-dom';
 import { Sun, Moon, Plus, User, Menu } from 'lucide-react';
 import { useTheme } from '../../contexts/ThemeContext';
+import { useState, useEffect } from 'react';
+import axios from 'axios';
+import API_URL from '../../config/api';
 
 const Header = ({ onMenuToggle }) => {
     const { isDark, toggleTheme } = useTheme();
-    // Get user info
     const userInfo = JSON.parse(localStorage.getItem('userInfo')) || {};
-    const balance = userInfo.balance || 0.00;
+    const [balance, setBalance] = useState(userInfo.balance || 0.00);
+
+    // Fetch fresh balance on mount and every 10 seconds
+    useEffect(() => {
+        const fetchBalance = async () => {
+            try {
+                const token = userInfo.token;
+                if (!token) return;
+
+                const config = {
+                    headers: { Authorization: `Bearer ${token}` }
+                };
+
+                const { data } = await axios.get(`${API_URL}/api/users/me`, config);
+                setBalance(data.balance || 0);
+
+                // Update localStorage
+                userInfo.balance = data.balance;
+                localStorage.setItem('userInfo', JSON.stringify(userInfo));
+            } catch (error) {
+                console.error('Failed to fetch balance:', error);
+            }
+        };
+
+        fetchBalance();
+        const interval = setInterval(fetchBalance, 10000); // Refresh every 10s
+
+        return () => clearInterval(interval);
+    }, []);
 
     return (
         <header className="bg-white dark:bg-dark-bg border-b border-gray-200 dark:border-dark-border sticky top-0 z-40 transition-colors">
