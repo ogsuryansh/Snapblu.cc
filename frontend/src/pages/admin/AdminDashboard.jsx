@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
 import { Users, DollarSign, Package, ShoppingCart, TrendingUp, CreditCard } from 'lucide-react';
+import API_URL from '../../config/api';
 
 const AdminDashboard = () => {
     const [stats, setStats] = useState({
@@ -17,7 +18,7 @@ const AdminDashboard = () => {
             try {
                 const adminInfo = JSON.parse(localStorage.getItem('adminInfo'));
                 const config = { headers: { Authorization: `Bearer ${adminInfo.token}` } };
-                const { data } = await axios.get('http://localhost:5000/api/admin/stats', config);
+                const { data } = await axios.get(`${API_URL}/api/admin/stats`, config);
                 setStats(data);
                 setLoading(false);
             } catch (err) {

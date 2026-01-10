@@ -5,6 +5,7 @@ import { useNavigate } from 'react-router-dom'; // Added for navigation
 import Button from '../components/common/Button';
 import DataTable from '../components/common/DataTable';
 import EmptyState from '../components/common/EmptyState';
+import API_URL from '../config/api';
 
 const Tickets = () => {
     const navigate = useNavigate(); // Added hook
@@ -26,7 +27,7 @@ const Tickets = () => {
         try {
             const userInfo = JSON.parse(localStorage.getItem('userInfo'));
             const config = { headers: { Authorization: `Bearer ${userInfo.token}` } };
-            const { data } = await axios.get('http://localhost:5000/api/tickets', config);
+            const { data } = await axios.get(`${API_URL}/api/tickets`, config);
             setTickets(data);
             setLoading(false);
         } catch (error) {
@@ -42,7 +43,7 @@ const Tickets = () => {
             const userInfo = JSON.parse(localStorage.getItem('userInfo'));
             const config = { headers: { Authorization: `Bearer ${userInfo.token}` } };
 
-            await axios.post('http://localhost:5000/api/tickets', {
+            await axios.post(`${API_URL}/api/tickets`, {
                 subject,
                 message,
                 priority
@@ -69,8 +70,8 @@ const Tickets = () => {
             key: 'status', label: 'Status',
             render: (row) => (
                 <span className={`px-2 py-1 rounded-full text-xs font-bold ${row.status === 'Open' ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400' :
-                        row.status === 'Closed' ? 'bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-400' :
-                            'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400'
+                    row.status === 'Closed' ? 'bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-400' :
+                        'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400'
                     }`}>
                     {row.status}
                 </span>

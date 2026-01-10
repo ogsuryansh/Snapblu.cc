@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Eye, EyeOff, ShieldCheck, CheckCircle2 } from 'lucide-react';
 import axios from 'axios';
+import API_URL from '../config/api';
 
 const Login = () => {
     const navigate = useNavigate();
@@ -24,7 +25,7 @@ const Login = () => {
             };
 
             const { data } = await axios.post(
-                'http://localhost:5000/api/users/login',
+                `${API_URL}/api/users/login`,
                 { email, password },
                 config
             );

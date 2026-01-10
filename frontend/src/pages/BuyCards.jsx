@@ -4,6 +4,7 @@ import { Filter, Columns3, ShoppingCart, X, CheckCircle, Copy } from 'lucide-rea
 import SearchBar from '../components/common/SearchBar';
 import Button from '../components/common/Button';
 import DataTable from '../components/common/DataTable';
+import API_URL from '../config/api';
 
 const BuyCards = () => {
     const [searchQuery, setSearchQuery] = useState('');
@@ -28,7 +29,7 @@ const BuyCards = () => {
         try {
             const userInfo = JSON.parse(localStorage.getItem('userInfo'));
             const config = { headers: { Authorization: `Bearer ${userInfo.token}` } };
-            const { data } = await axios.get('http://localhost:5000/api/products', config);
+            const { data } = await axios.get(`${API_URL}/api/products`, config);
             setProducts(data.filter(p => p.type === 'card'));
             setLoading(false);
         } catch (err) {
@@ -45,7 +46,7 @@ const BuyCards = () => {
             const userInfo = JSON.parse(localStorage.getItem('userInfo'));
             const config = { headers: { Authorization: `Bearer ${userInfo.token}` } };
 
-            const { data } = await axios.post(`http://localhost:5000/api/orders/purchase/${productId}`, {}, config);
+            const { data } = await axios.post(`${API_URL}/api/orders/purchase/${productId}`, {}, config);
 
             setPurchaseResult(data.product);
             fetchProducts(); // Refresh list to remove sold item

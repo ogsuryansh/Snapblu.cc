@@ -2,6 +2,7 @@ import { useEffect, useState, useRef } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import axios from 'axios';
 import { CheckCircle2, XCircle, Loader2, ShieldCheck } from 'lucide-react';
+import API_URL from '../config/api';
 
 const VerifyEmail = () => {
     const { token } = useParams();
@@ -15,7 +16,7 @@ const VerifyEmail = () => {
             verifyCalled.current = true;
 
             try {
-                const { data } = await axios.get(`http://localhost:5000/api/users/verify/${token}`);
+                const { data } = await axios.get(`${API_URL}/api/users/verify/${token}`);
                 setStatus('success');
                 setMessage(data.message);
             } catch (error) {

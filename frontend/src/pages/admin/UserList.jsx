@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
 import { Trash2, Shield, ShieldAlert } from 'lucide-react';
+import API_URL from '../../config/api';
 
 const UserList = () => {
     const [users, setUsers] = useState([]);
@@ -17,7 +18,7 @@ const UserList = () => {
                     },
                 };
 
-                const { data } = await axios.get('http://localhost:5000/api/users', config);
+                const { data } = await axios.get(`${API_URL}/api/users`, config);
                 setUsers(data);
                 setLoading(false);
             } catch (err) {

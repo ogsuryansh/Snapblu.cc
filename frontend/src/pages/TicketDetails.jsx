@@ -3,6 +3,7 @@ import axios from 'axios';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Send, ArrowLeft, User, ShieldCheck } from 'lucide-react';
 import Button from '../components/common/Button';
+import API_URL from '../config/api';
 
 const TicketDetails = () => {
     const { id } = useParams();
@@ -25,7 +26,7 @@ const TicketDetails = () => {
         try {
             const userInfo = JSON.parse(localStorage.getItem('userInfo'));
             const config = { headers: { Authorization: `Bearer ${userInfo.token}` } };
-            const { data } = await axios.get(`http://localhost:5000/api/tickets/${id}`, config);
+            const { data } = await axios.get(`${API_URL}/api/tickets/${id}`, config);
             setTicket(data);
             setLoading(false);
         } catch (error) {
@@ -43,7 +44,7 @@ const TicketDetails = () => {
             const userInfo = JSON.parse(localStorage.getItem('userInfo'));
             const config = { headers: { Authorization: `Bearer ${userInfo.token}` } };
 
-            const { data } = await axios.post(`http://localhost:5000/api/tickets/${id}/reply`, {
+            const { data } = await axios.post(`${API_URL}/api/tickets/${id}/reply`, {
                 message: reply
             }, config);
 
@@ -76,7 +77,7 @@ const TicketDetails = () => {
                         <div className="flex items-center gap-3 mb-2">
                             <h1 className="text-2xl font-bold text-gray-900 dark:text-white">{ticket.subject}</h1>
                             <span className={`px-2 py-0.5 rounded text-xs font-bold uppercase ${ticket.status === 'Open' ? 'bg-green-100 text-green-700' :
-                                    'bg-blue-100 text-blue-700'
+                                'bg-blue-100 text-blue-700'
                                 }`}>
                                 {ticket.status}
                             </span>
@@ -97,8 +98,8 @@ const TicketDetails = () => {
                                 {isAdmin ? <ShieldCheck size={16} /> : <User size={16} />}
                             </div>
                             <div className={`max-w-[80%] rounded-2xl p-4 ${isAdmin
-                                    ? 'bg-red-50 dark:bg-red-900/20 text-gray-900 dark:text-gray-100 rounded-tr-none'
-                                    : 'bg-white dark:bg-slate-800 text-gray-900 dark:text-gray-100 shadow-sm rounded-tl-none'
+                                ? 'bg-red-50 dark:bg-red-900/20 text-gray-900 dark:text-gray-100 rounded-tr-none'
+                                : 'bg-white dark:bg-slate-800 text-gray-900 dark:text-gray-100 shadow-sm rounded-tl-none'
                                 }`}>
                                 <div className="flex items-center gap-2 mb-1">
                                     <span className="text-xs font-bold text-gray-500">{msg.sender}</span>

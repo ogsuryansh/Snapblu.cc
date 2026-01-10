@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
 import { Trash2, Plus, CreditCard, DollarSign, User, MapPin } from 'lucide-react';
+import API_URL from '../../config/api';
 
 const AdminProducts = () => {
     const [products, setProducts] = useState([]);
@@ -32,7 +33,7 @@ const AdminProducts = () => {
         try {
             const adminInfo = JSON.parse(localStorage.getItem('adminInfo'));
             const config = { headers: { Authorization: `Bearer ${adminInfo.token}` } };
-            const { data } = await axios.get('http://localhost:5000/api/products', config);
+            const { data } = await axios.get(`${API_URL}/api/products`, config);
             setProducts(data);
             setLoading(false);
         } catch (error) {
@@ -67,7 +68,7 @@ const AdminProducts = () => {
         try {
             const adminInfo = JSON.parse(localStorage.getItem('adminInfo'));
             const config = { headers: { Authorization: `Bearer ${adminInfo.token}` } };
-            await axios.delete(`http://localhost:5000/api/products/${id}`, config);
+            await axios.delete(`${API_URL}/api/products/${id}`, config);
             fetchProducts();
         } catch (error) {
             alert('Error deleting product');
@@ -81,7 +82,7 @@ const AdminProducts = () => {
             const config = { headers: { Authorization: `Bearer ${adminInfo.token}` } };
 
             // Send all data
-            await axios.post('http://localhost:5000/api/products', {
+            await axios.post(`${API_URL}/api/products`, {
                 ...formData,
                 type: 'card'
             }, config);

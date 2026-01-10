@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import axios from 'axios';
 import { Copy, Eye, EyeOff, CheckCircle } from 'lucide-react';
 import DataTable from '../components/common/DataTable';
+import API_URL from '../config/api';
 
 const MyCardOrders = () => {
     const [orders, setOrders] = useState([]);
@@ -14,7 +15,7 @@ const MyCardOrders = () => {
             try {
                 const userInfo = JSON.parse(localStorage.getItem('userInfo'));
                 const config = { headers: { Authorization: `Bearer ${userInfo.token}` } };
-                const { data } = await axios.get('http://localhost:5000/api/orders/myorders', config);
+                const { data } = await axios.get(`${API_URL}/api/orders/myorders`, config);
                 // Filter only cards just in case
                 const onlyCards = data.filter(item => item.type === 'card');
                 setOrders(onlyCards);

@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
 import { ArrowUpRight, ArrowDownLeft, Clock, Activity } from 'lucide-react';
+import API_URL from '../config/api';
 
 const Transactions = () => {
     const [transactions, setTransactions] = useState([]);
@@ -11,7 +12,7 @@ const Transactions = () => {
             try {
                 const userInfo = JSON.parse(localStorage.getItem('userInfo'));
                 const config = { headers: { Authorization: `Bearer ${userInfo.token}` } };
-                const { data } = await axios.get('http://localhost:5000/api/transactions', config);
+                const { data } = await axios.get(`${API_URL}/api/transactions`, config);
                 setTransactions(data);
                 setLoading(false);
             } catch (error) {
@@ -48,8 +49,8 @@ const Transactions = () => {
                                         <td className="px-6 py-4">
                                             <div className="flex items-center gap-2">
                                                 <div className={`p-2 rounded-full ${tx.type === 'deposit'
-                                                        ? 'bg-green-100 text-green-600 dark:bg-green-500/20 dark:text-green-400'
-                                                        : 'bg-blue-100 text-blue-600 dark:bg-blue-500/20 dark:text-blue-400'
+                                                    ? 'bg-green-100 text-green-600 dark:bg-green-500/20 dark:text-green-400'
+                                                    : 'bg-blue-100 text-blue-600 dark:bg-blue-500/20 dark:text-blue-400'
                                                     }`}>
                                                     {tx.type === 'deposit' ? <ArrowDownLeft size={16} /> : <ArrowUpRight size={16} />}
                                                 </div>

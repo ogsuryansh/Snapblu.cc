@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
 import { Save, Wallet } from 'lucide-react';
+import API_URL from '../../config/api';
 
 const AdminSettings = () => {
     const [settings, setSettings] = useState({
@@ -20,7 +21,7 @@ const AdminSettings = () => {
     useEffect(() => {
         const fetchSettings = async () => {
             try {
-                const { data } = await axios.get('http://localhost:5000/api/settings');
+                const { data } = await axios.get(`${API_URL}/api/settings`);
                 setSettings({
                     btcAddress: data.btcAddress || '',
                     ltcAddress: data.ltcAddress || '',
@@ -48,7 +49,7 @@ const AdminSettings = () => {
             const adminInfo = JSON.parse(localStorage.getItem('adminInfo'));
             const config = { headers: { Authorization: `Bearer ${adminInfo.token}` } };
 
-            await axios.put('http://localhost:5000/api/settings', settings, config);
+            await axios.put(`${API_URL}/api/settings`, settings, config);
             setMessage({ type: 'success', text: 'Settings updated successfully!' });
         } catch (error) {
             setMessage({ type: 'error', text: 'Failed to update settings' });

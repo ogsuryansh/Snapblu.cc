@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import axios from 'axios';
 import { Copy, CreditCard, CheckCircle, Wallet, ChevronDown, Check } from 'lucide-react';
 import Button from '../components/common/Button';
+import API_URL from '../config/api';
 
 const Deposit = () => {
     const [amount, setAmount] = useState('');
@@ -15,7 +16,7 @@ const Deposit = () => {
     useEffect(() => {
         const fetchSettings = async () => {
             try {
-                const { data } = await axios.get('http://localhost:5000/api/settings');
+                const { data } = await axios.get(`${API_URL}/api/settings`);
                 setAddresses(data);
                 setSettingsLoaded(true);
             } catch (error) {
@@ -70,7 +71,7 @@ const Deposit = () => {
             const userInfo = JSON.parse(localStorage.getItem('userInfo'));
             const config = { headers: { Authorization: `Bearer ${userInfo.token}` } };
 
-            await axios.post('http://localhost:5000/api/deposits', {
+            await axios.post(`${API_URL}/api/deposits`, {
                 amount: Number(amount),
                 transactionId: txId,
                 method: selectedCoin // Send specific coin (e.g., BTC, ETH)

@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
 import { Check, X, Clock, CreditCard } from 'lucide-react';
+import API_URL from '../../config/api';
 
 const AdminDeposits = () => {
     const [deposits, setDeposits] = useState([]);
@@ -10,7 +11,7 @@ const AdminDeposits = () => {
         try {
             const adminInfo = JSON.parse(localStorage.getItem('adminInfo'));
             const config = { headers: { Authorization: `Bearer ${adminInfo.token}` } };
-            const { data } = await axios.get('http://localhost:5000/api/deposits', config);
+            const { data } = await axios.get(`${API_URL}/api/deposits`, config);
             setDeposits(data);
             setLoading(false);
         } catch (error) {
@@ -28,7 +29,7 @@ const AdminDeposits = () => {
         try {
             const adminInfo = JSON.parse(localStorage.getItem('adminInfo'));
             const config = { headers: { Authorization: `Bearer ${adminInfo.token}` } };
-            await axios.put(`http://localhost:5000/api/deposits/${id}`, { status }, config);
+            await axios.put(`${API_URL}/api/deposits/${id}`, { status }, config);
             fetchDeposits(); // Refresh list
         } catch (error) {
             alert('Action failed');
