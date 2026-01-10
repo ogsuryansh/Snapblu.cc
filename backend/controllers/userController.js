@@ -55,27 +55,105 @@ const registerUser = asyncHandler(async (req, res) => {
     });
 
     if (user) {
-        // Send Verification Email
-        // Assuming frontend runs on port 5173
-        const verificationUrl = `http://localhost:5173/verify-email/${verificationToken}`;
+        // Send Verification Email with dynamic URL
+        const verificationUrl = `${process.env.FRONTEND_URL || 'http://localhost:5173'}/verify-email/${verificationToken}`;
 
-        // DEV: Log link to console
-        console.log('-------------------------------------------------------');
-        console.log(`VERIFY LINK: ${verificationUrl}`);
-        console.log('-------------------------------------------------------');
-
+        // Professional HTML Email Template
         const message = `
-            <h2>Hello ${user.username},</h2>
-            <p>Please verify your email address to activate your account on Snapblu.cc.</p>
-            <p><a href="${verificationUrl}" style="background-color: #3b82f6; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px;">Verify Email</a></p>
-            <p>Or click this link: <a href="${verificationUrl}">${verificationUrl}</a></p>
-            <p>This link is valid for 24 hours.</p>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Verify Your Email - Snapblu.cc</title>
+</head>
+<body style="margin: 0; padding: 0; font-family: 'Arial', 'Helvetica', sans-serif; background-color: #0a0a0a; color: #ffffff;">
+    <table role="presentation" style="width: 100%; border-collapse: collapse; background-color: #0a0a0a;">
+        <tr>
+            <td align="center" style="padding: 40px 20px;">
+                <table role="presentation" style="width: 100%; max-width: 600px; border-collapse: collapse; background: linear-gradient(135deg, #111111 0%, #1a1a1a 100%); border-radius: 16px; overflow: hidden; box-shadow: 0 10px 40px rgba(0,0,0,0.5);">
+                    
+                    <!-- Header with Logo -->
+                    <tr>
+                        <td style="background: linear-gradient(90deg, #3b82f6 0%, #8b5cf6 100%); padding: 40px 30px; text-align: center;">
+                            <div style="width: 60px; height: 60px; background: rgba(255,255,255,0.15); border-radius: 12px; display: inline-flex; align-items: center; justify-content: center; margin-bottom: 16px;">
+                                <span style="font-size: 32px; color: white;">🛡️</span>
+                            </div>
+                            <h1 style="margin: 0; color: white; font-size: 28px; font-weight: 700; letter-spacing: -0.5px;">Snapblu.cc</h1>
+                            <p style="margin: 8px 0 0 0; color: rgba(255,255,255,0.9); font-size: 14px; font-weight: 500;">Secure Digital Solutions</p>
+                        </td>
+                    </tr>
+
+                    <!-- Main Content -->
+                    <tr>
+                        <td style="padding: 40px 30px;">
+                            <h2 style="margin: 0 0 16px 0; color: #ffffff; font-size: 24px; font-weight: 600;">Welcome, ${user.username}! 👋</h2>
+                            <p style="margin: 0 0 24px 0; color: #a3a3a3; font-size: 16px; line-height: 1.6;">
+                                Thank you for choosing Snapblu.cc. We're excited to have you on board! To get started and access all features, please verify your email address.
+                            </p>
+
+                            <!-- CTA Button -->
+                            <table role="presentation" style="width: 100%; border-collapse: collapse; margin: 32px 0;">
+                                <tr>
+                                    <td align="center">
+                                        <a href="${verificationUrl}" style="display: inline-block; padding: 16px 48px; background: linear-gradient(90deg, #3b82f6 0%, #8b5cf6 100%); color: white; text-decoration: none; border-radius: 8px; font-weight: 600; font-size: 16px; box-shadow: 0 4px 14px rgba(59, 130, 246, 0.4); transition: all 0.3s ease;">
+                                            ✓ Verify Email Address
+                                        </a>
+                                    </td>
+                                </tr>
+                            </table>
+
+                            <!-- Alternative Link -->
+                            <div style="margin: 32px 0; padding: 20px; background-color: rgba(255,255,255,0.03); border-left: 4px solid #3b82f6; border-radius: 4px;">
+                                <p style="margin: 0 0 8px 0; color: #737373; font-size: 13px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px;">
+                                    Button not working?
+                                </p>
+                                <p style="margin: 0; color: #a3a3a3; font-size: 14px; line-height: 1.5; word-break: break-all;">
+                                    Copy and paste this link into your browser:<br/>
+                                    <a href="${verificationUrl}" style="color: #3b82f6; text-decoration: underline;">${verificationUrl}</a>
+                                </p>
+                            </div>
+
+                            <!-- Security Notice -->
+                            <div style="margin: 32px 0 0 0; padding: 16px; background-color: rgba(251, 191, 36, 0.1); border: 1px solid rgba(251, 191, 36, 0.3); border-radius: 8px;">
+                                <p style="margin: 0; color: #fbbf24; font-size: 13px; line-height: 1.5;">
+                                    ⏱️ <strong>Important:</strong> This verification link expires in 24 hours for security reasons.
+                                </p>
+                            </div>
+                        </td>
+                    </tr>
+
+                    <!-- Footer -->
+                    <tr>
+                        <td style="padding: 30px; background-color: rgba(0,0,0,0.3); text-align: center; border-top: 1px solid rgba(255,255,255,0.1);">
+                            <p style="margin: 0 0 12px 0; color: #737373; font-size: 13px; line-height: 1.5;">
+                                If you didn't create an account with Snapblu.cc, please ignore this email.
+                            </p>
+                            <div style="margin: 16px 0;">
+                                <a href="#" style="color: #3b82f6; text-decoration: none; font-size: 13px; margin: 0 12px;">Help Center</a>
+                                <span style="color: #404040;">•</span>
+                                <a href="#" style="color: #3b82f6; text-decoration: none; font-size: 13px; margin: 0 12px;">Privacy Policy</a>
+                                <span style="color: #404040;">•</span>
+                                <a href="#" style="color: #3b82f6; text-decoration: none; font-size: 13px; margin: 0 12px;">Terms</a>
+                            </div>
+                            <p style="margin: 16px 0 0 0; color: #525252; font-size: 12px;">
+                                © 2026 Snapblu.cc. All rights reserved.
+                            </p>
+                        </td>
+                    </tr>
+
+                </table>
+            </td>
+        </tr>
+    </table>
+</body>
+</html>
         `;
 
         try {
             await sendEmail({
                 email: user.email,
-                subject: 'Snapblu Registration - Verify Email',
+                subject: '🔐 Verify Your Email - Snapblu.cc',
                 message,
             });
 
@@ -84,8 +162,6 @@ const registerUser = asyncHandler(async (req, res) => {
             });
         } catch (error) {
             console.error("Email send error:", error);
-            // Delete user if email fails so they can try again? Or just throw error.
-            // For now, let's keep user but warn logic.
             res.status(500);
             throw new Error('Email could not be sent. Please contact support.');
         }
@@ -137,5 +213,20 @@ const getUsers = asyncHandler(async (req, res) => {
     res.json(users);
 });
 
-export { authUser, registerUser, verifyEmail, getUsers };
+// @desc    Delete user
+// @route   DELETE /api/users/:id
+// @access  Private/Admin
+const deleteUser = asyncHandler(async (req, res) => {
+    const user = await User.findById(req.params.id);
+
+    if (user) {
+        await user.deleteOne();
+        res.json({ message: 'User removed successfully' });
+    } else {
+        res.status(404);
+        throw new Error('User not found');
+    }
+});
+
+export { authUser, registerUser, verifyEmail, getUsers, deleteUser };
 

@@ -30,6 +30,29 @@ const UserList = () => {
         fetchUsers();
     }, []);
 
+    const handleDeleteUser = async (userId, username) => {
+        if (!window.confirm(`Are you sure you want to permanently delete user "${username}"? This action cannot be undone.`)) {
+            return;
+        }
+
+        try {
+            const adminInfo = JSON.parse(localStorage.getItem('adminInfo'));
+            const config = {
+                headers: {
+                    Authorization: `Bearer ${adminInfo.token}`,
+                },
+            };
+
+            await axios.delete(`${API_URL}/api/users/${userId}`, config);
+
+            // Remove user from local state
+            setUsers(users.filter(user => user._id !== userId));
+            alert('User deleted successfully');
+        } catch (err) {
+            alert(err.response?.data?.message || 'Failed to delete user');
+        }
+    };
+
     return (
         <div className="p-8">
             <div className="flex justify-between items-center mb-8">
@@ -88,7 +111,11 @@ const UserList = () => {
                                                 <button className="p-2 text-slate-400 hover:text-blue-400 hover:bg-blue-500/10 rounded-lg transition-colors" title="Edit">
                                                     <ShieldAlert size={16} />
                                                 </button>
-                                                <button className="p-2 text-slate-400 hover:text-red-400 hover:bg-red-500/10 rounded-lg transition-colors" title="Delete">
+                                                <button
+                                                    onClick={() => handleDeleteUser(user._id, user.username)}
+                                                    className="p-2 text-slate-400 hover:text-red-400 hover:bg-red-500/10 rounded-lg transition-colors"
+                                                    title="Delete"
+                                                >
                                                     <Trash2 size={16} />
                                                 </button>
                                             </div>

@@ -19,6 +19,17 @@ const Register = () => {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
     const [success, setSuccess] = useState(false);
+    const [isVerified, setIsVerified] = useState(false);
+    const [isVerifying, setIsVerifying] = useState(false);
+
+    const handleVerify = () => {
+        if (isVerified || isVerifying) return;
+        setIsVerifying(true);
+        setTimeout(() => {
+            setIsVerified(true);
+            setIsVerifying(false);
+        }, 1500);
+    };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -190,15 +201,27 @@ const Register = () => {
                             </div>
                         </div>
 
-                        {/* Cloudflare Mock */}
-                        <div className="bg-[#1a1a1a] border border-[#333] rounded-md p-4 flex items-center justify-between">
+                        {/* Interactive Cloudflare Mock */}
+                        <div
+                            onClick={handleVerify}
+                            className={`bg-[#1a1a1a] border border-[#333] rounded-md p-4 flex items-center justify-between cursor-pointer select-none transition-colors ${!isVerified && 'hover:bg-[#222]'}`}
+                        >
                             <div className="flex items-center gap-3">
                                 <div className="checkbox-wrapper">
-                                    <div className="w-6 h-6 border-2 border-gray-400 rounded flex items-center justify-center">
-                                        {/* Mock spinner or check */}
+                                    <div className={`w-7 h-7 border-2 rounded flex items-center justify-center transition-all ${isVerified
+                                            ? 'bg-green-500 border-green-500'
+                                            : 'border-gray-500 bg-transparent'
+                                        }`}>
+                                        {isVerifying ? (
+                                            <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                                        ) : isVerified ? (
+                                            <CheckCircle2 size={18} className="text-white" />
+                                        ) : null}
                                     </div>
                                 </div>
-                                <span className="text-sm text-gray-300">Verify you are human</span>
+                                <span className="text-sm text-gray-300">
+                                    {isVerified ? 'Success!' : isVerifying ? 'Verifying...' : 'Verify you are human'}
+                                </span>
                             </div>
                             <div className="flex flex-col items-end">
                                 <ShieldCheck size={24} className="text-gray-500" />
@@ -207,7 +230,7 @@ const Register = () => {
 
                         <button
                             type="submit"
-                            disabled={loading}
+                            disabled={loading || !isVerified}
                             className="w-full bg-white text-black font-bold py-3 rounded-lg hover:bg-gray-200 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
                         >
                             {loading ? (
