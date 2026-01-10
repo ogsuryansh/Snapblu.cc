@@ -61,6 +61,10 @@
   .badge {
     @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium;
   }
+
+  .input-field-admin {
+    @apply w-full bg-slate-900 border border-slate-700 rounded-lg p-3 text-white text-sm placeholder-slate-500 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all font-mono;
+  }
 }
 
 /* View Transitions API - Wave Effect */

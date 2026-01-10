@@ -1,4 +1,5 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import axios from 'axios';
 import { Filter, Columns3, ShoppingCart } from 'lucide-react';
 import SearchBar from '../components/common/SearchBar';
 import Button from '../components/common/Button';
@@ -10,104 +11,80 @@ const BuyCards = () => {
     const [selectedCards, setSelectedCards] = useState([]);
     const [showColumnMenu, setShowColumnMenu] = useState(false);
 
-    // Sample data
-    const cardsData = [
-        {
-            cardNumber: '7196',
-            bin: '438854',
-            brand: 'VISA',
-            type: 'CREDIT',
-            level: 'CLASSIC',
-            issuer: 'CHASE BANK USA, N.A.',
-            country: 'UNITED STATES',
-            city: 'Holly Springs',
-            state: 'NC',
-        },
-        {
-            cardNumber: '8982',
-            bin: '455958',
-            brand: 'VISA',
-            type: 'CREDIT',
-            level: 'CLASSIC',
-            issuer: 'CHASE BANK USA, N.A.',
-            country: 'UNITED STATES',
-            city: 'Holliston',
-            state: 'MA',
-        },
-        {
-            cardNumber: '1887',
-            bin: '379282',
-            brand: 'AMERICAN EXPRESS',
-            type: 'CREDIT',
-            level: '-',
-            issuer: 'AMERICAN EXPRESS US',
-            country: 'UNITED STATES',
-            city: 'Toledo',
-            state: 'OH',
-        },
-        {
-            cardNumber: '9222',
-            bin: '412138',
-            brand: 'VISA',
-            type: 'CREDIT',
-            level: 'CLASSIC',
-            issuer: 'CHASE BANK USA, N.A.',
-            country: 'UNITED STATES',
-            city: 'Sussex',
-            state: 'WI',
-        },
-        {
-            cardNumber: '1636',
-            bin: '421156',
-            brand: 'VISA',
-            type: 'CREDIT',
-            level: 'CLASSIC',
-            issuer: 'CHASE BANK USA, N.A.',
-            country: 'UNITED STATES',
-            city: 'Richland',
-            state: '-',
-        },
-        {
-            cardNumber: '3788',
-            bin: '544768',
-            brand: 'MASTERCARD',
-            type: 'DEBIT',
-            level: 'PREPAID',
-            issuer: 'METABANK',
-            country: 'UNITED STATES',
-            city: 'Charlotte',
-            state: 'NC',
-        },
-        {
-            cardNumber: '3848',
-            bin: '531445',
-            brand: 'MASTERCARD',
-            type: 'DEBIT',
-            level: 'PREPAID BUSINESS',
-            issuer: 'CHOICE BANK, LTD.',
-            country: 'BELIZE',
-            city: 'Ellenburg',
-            state: '',
-        },
-    ];
+    // API State
+    const [products, setProducts] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
+
+    useEffect(() => {
+        const fetchProducts = async () => {
+            try {
+                const userInfo = JSON.parse(localStorage.getItem('userInfo'));
+                const config = {
+                    headers: {
+                        Authorization: `Bearer ${userInfo.token}`,
+                    },
+                };
+                // Fetch all products, filter for 'card' type on frontend or backend
+                const { data } = await axios.get('http://localhost:5000/api/products', config);
+                // Filter only cards
+                const cardsOnly = data.filter(p => p.type === 'card');
+                setProducts(cardsOnly);
+                setLoading(false);
+            } catch (err) {
+                setError(err.message);
+                setLoading(false);
+            }
+        };
+
+        fetchProducts();
+    }, []);
+
+    // Filter Logic
+    const filteredData = products.filter(card => {
+        const matchesSearch =
+            (card.bin && card.bin.includes(searchQuery)) ||
+            (card.brand && card.brand.toLowerCase().includes(searchQuery.toLowerCase())) ||
+            (card.issuer && card.issuer.toLowerCase().includes(searchQuery.toLowerCase()));
+
+        // const matchesBase = selectedBase === 'all' || card.base === selectedBase; // Base not yet in DB
+        return matchesSearch;
+    });
 
     const columns = [
         {
-            key: 'cardNumber',
-            label: 'Card Number',
+            key: 'bin',
+            label: 'BIN',
+            sortable: true,
+            render: (row) => <span className="font-mono text-blue-400">{row.bin}</span>
+        },
+        {
+            key: 'brand',
+            label: 'Brand',
             sortable: true,
             render: (row) => (
-                <span className="text-blue-400 font-mono">{row.cardNumber}</span>
-            ),
+                <div className="flex items-center gap-2">
+                    <span className="font-bold text-gray-700 dark:text-gray-300">{row.brand}</span>
+                    <span className="text-xs text-gray-500 bg-gray-100 dark:bg-dark-hover px-1 rounded">{row.type}</span>
+                </div>
+            )
         },
-        { key: 'bin', label: 'BIN', sortable: true },
-        { key: 'brand', label: 'Brand', sortable: true },
-        { key: 'type', label: 'Type', sortable: true },
-        { key: 'level', label: 'Level', sortable: true },
-        { key: 'issuer', label: 'Issuer', sortable: true },
-        { key: 'country', label: 'Country', sortable: true },
-        { key: 'city', label: 'City', sortable: true },
-        { key: 'state', label: 'State', sortable: true },
+        { key: 'issuer', label: 'Bank', sortable: true },
+        {
+            key: 'price',
+            label: 'Price',
+            sortable: true,
+            render: (row) => <span className="font-bold text-green-500">${row.price}</span>
+        },
+        {
+            key: 'action',
+            label: 'Action',
+            render: (row) => (
+                <button className="bg-blue-600 hover:bg-blue-500 text-white px-4 py-1.5 rounded-lg text-xs font-bold shadow-sm transition-all hover:scale-105 active:scale-95">
+                    BUY
+                </button>
+            )
+        }
     ];
 
     return (
@@ -115,35 +92,20 @@ const BuyCards = () => {
             {/* Header */}
             <div className="mb-6">
                 <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">Buy Cards</h1>
-                <p className="text-gray-600 dark:text-gray-400">Purchase credit cards from available bases</p>
+                <p className="text-gray-600 dark:text-gray-400">Purchase high quality cards at the best prices.</p>
             </div>
 
             {/* Filters and Search */}
             <div className="card p-4 mb-6">
                 <div className="flex flex-col lg:flex-row gap-4">
                     <SearchBar
-                        placeholder="Search cards, base name, BIN, brand..."
+                        placeholder="Search BIN, Bank, Brand..."
                         value={searchQuery}
                         onChange={setSearchQuery}
                         className="flex-1"
                     />
 
                     <div className="flex gap-3">
-                        <div className="flex items-center gap-2">
-                            <label className="text-sm text-gray-600 dark:text-gray-400 whitespace-nowrap">
-                                Filter by Base:
-                            </label>
-                            <select
-                                value={selectedBase}
-                                onChange={(e) => setSelectedBase(e.target.value)}
-                                className="input-field min-w-[150px]"
-                            >
-                                <option value="all">All Bases</option>
-                                <option value="base1">Base 1</option>
-                                <option value="base2">Base 2</option>
-                            </select>
-                        </div>
-
                         <Button variant="secondary" icon={Filter}>
                             Filters
                         </Button>
@@ -191,12 +153,18 @@ const BuyCards = () => {
 
             {/* Table */}
             <div className="card">
-                <DataTable
-                    columns={columns}
-                    data={cardsData}
-                    selectable
-                    onSelectionChange={setSelectedCards}
-                />
+                {loading ? (
+                    <div className="p-8 text-center text-gray-500">Loading inventory...</div>
+                ) : error ? (
+                    <div className="p-8 text-center text-red-500">{error}</div>
+                ) : (
+                    <DataTable
+                        columns={columns}
+                        data={filteredData}
+                        selectable
+                        onSelectionChange={setSelectedCards}
+                    />
+                )}
             </div>
         </div>
     );

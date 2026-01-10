@@ -25,6 +25,8 @@ import AdminLogin from './pages/admin/AdminLogin';
 import AdminLayout from './pages/admin/AdminLayout';
 import AdminDashboard from './pages/admin/AdminDashboard';
 import UserList from './pages/admin/UserList';
+import AdminProducts from './pages/admin/AdminProducts';
+import AdminDeposits from './pages/admin/AdminDeposits';
 
 function App() {
   return (
@@ -43,6 +45,8 @@ function App() {
               <Route index element={<Navigate to="/admin/dashboard" replace />} />
               <Route path="dashboard" element={<AdminDashboard />} />
               <Route path="users" element={<UserList />} />
+              <Route path="products" element={<AdminProducts />} />
+              <Route path="deposits" element={<AdminDeposits />} />
             </Route>
           </Route>
 
