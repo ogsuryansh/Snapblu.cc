@@ -103,19 +103,19 @@ const Register = () => {
             <div className="w-full lg:w-1/2 flex flex-col justify-center p-8 sm:p-12 lg:p-20 relative z-10">
                 <div className="max-w-md w-full mx-auto space-y-8">
                     {/* Logo Mobile */}
-                    <div className="flex items-center gap-2 lg:hidden font-bold text-2xl mb-8">
-                        <div className="w-8 h-8 bg-gradient-to-br from-blue-500 to-purple-600 rounded-lg flex items-center justify-center">
-                            <ShieldCheck size={20} className="text-white" />
+                    <div className="flex items-center gap-3 lg:hidden mb-8 group cursor-pointer">
+                        <div className="w-10 h-10 bg-gradient-to-br from-blue-600 to-indigo-700 rounded-xl flex items-center justify-center shadow-lg shadow-blue-500/20 group-hover:rotate-12 transition-transform">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" className="text-white"><path d="m13 2-2 10h9L7 22l2-10H1L13 2z" fill="currentColor" /></svg>
                         </div>
-                        <span>Snapblu.cc</span>
+                        <span className="text-2xl font-black tracking-tighter text-white">ZENITH</span>
                     </div>
 
-                    {/* Logo Desktop (Top Left absolute) */}
-                    <div className="hidden lg:flex absolute top-8 left-8 items-center gap-2 font-bold text-xl">
-                        <div className="w-8 h-8 bg-gradient-to-br from-blue-500 to-purple-600 rounded-lg flex items-center justify-center">
-                            <ShieldCheck size={20} className="text-white" />
+                    {/* Logo Desktop */}
+                    <div className="hidden lg:flex absolute top-8 left-8 items-center gap-3 font-bold group cursor-pointer">
+                        <div className="w-9 h-9 bg-gradient-to-br from-blue-600 to-indigo-700 rounded-xl flex items-center justify-center shadow-lg shadow-blue-500/20 group-hover:rotate-12 transition-transform">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" className="text-white"><path d="m13 2-2 10h9L7 22l2-10H1L13 2z" fill="currentColor" /></svg>
                         </div>
-                        <span>Snapblu.cc</span>
+                        <span className="text-xl font-black tracking-tighter text-white">ZENITH</span>
                     </div>
 
                     <div className="space-y-2">

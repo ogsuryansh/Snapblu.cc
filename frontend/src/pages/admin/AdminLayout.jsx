@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { Outlet, Link, useNavigate, useLocation } from 'react-router-dom';
 import {
     Users,
@@ -18,10 +18,39 @@ const AdminLayout = () => {
     const location = useLocation();
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
-    // Auto-close sidebar on route change (Mobile)
-    useEffect(() => {
+    // Memoize close function to prevent unnecessary re-renders
+    const closeMobileMenu = useCallback(() => {
         setIsMobileMenuOpen(false);
-    }, [location.pathname]);
+    }, []);
+
+    // Memoize toggle with delay to prevent race condition
+    const toggleMobileMenu = useCallback((e) => {
+        if (e) {
+            e.preventDefault();
+            e.stopPropagation();
+        }
+        // Small delay to ensure click doesn't propagate to overlay
+        setTimeout(() => {
+            setIsMobileMenuOpen(prev => !prev);
+        }, 0);
+    }, []);
+
+    // Auto-close sidebar on route change
+    useEffect(() => {
+        closeMobileMenu();
+    }, [location.pathname, closeMobileMenu]);
+
+    // Prevent scrolling when menu is open
+    useEffect(() => {
+        if (isMobileMenuOpen) {
+            document.body.style.overflow = 'hidden';
+        } else {
+            document.body.style.overflow = 'unset';
+        }
+        return () => {
+            document.body.style.overflow = 'unset';
+        };
+    }, [isMobileMenuOpen]);
 
     const handleLogout = () => {
         localStorage.removeItem('adminInfo');
@@ -54,24 +83,26 @@ const AdminLayout = () => {
                     </span>
                 </div>
                 <button
-                    onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-                    className="p-2 text-slate-300 hover:text-white"
+                    onClick={toggleMobileMenu}
+                    className="p-2 text-slate-300 hover:text-white active:scale-95 transition-transform"
+                    type="button"
                 >
                     {isMobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
                 </button>
             </div>
 
-            {/* Sidebar Overlay */}
+            {/* Sidebar Overlay - Only clickable after menu is fully open */}
             {isMobileMenuOpen && (
                 <div
                     className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[90] md:hidden"
-                    onClick={() => setIsMobileMenuOpen(false)}
+                    onClick={closeMobileMenu}
+                    onTouchEnd={closeMobileMenu}
                 />
             )}
 
             {/* Sidebar */}
             <aside className={`
-                fixed inset-y-0 left-0 w-64 bg-slate-900 border-r border-slate-800 z-[100] transform transition-transform duration-300 ease-in-out
+                fixed inset-y-0 left-0 w-64 bg-slate-900 border-r border-slate-800 z-[95] transform transition-transform duration-300 ease-in-out
                 ${isMobileMenuOpen ? 'translate-x-0' : '-translate-x-full'}
                 md:relative md:translate-x-0 flex flex-col h-screen
             `}>
@@ -89,6 +120,7 @@ const AdminLayout = () => {
                         <Link
                             key={item.path}
                             to={item.path}
+                            onClick={closeMobileMenu}
                             className={`flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all group ${isActive(item.path)
                                     ? 'bg-blue-600 text-white shadow-lg shadow-blue-900/40'
                                     : 'text-slate-400 hover:text-white hover:bg-slate-800'

@@ -63,12 +63,12 @@ const AdminLogin = () => {
         <div className="min-h-screen bg-[#0f172a] flex items-center justify-center p-4">
             <div className="max-w-md w-full">
                 {/* Admin Header */}
-                <div className="text-center mb-8">
-                    <div className="w-16 h-16 bg-blue-600 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg shadow-blue-900/20">
-                        <Lock size={32} className="text-white" />
+                <div className="text-center mb-10 group">
+                    <div className="w-20 h-20 bg-gradient-to-br from-blue-600 to-indigo-700 rounded-3xl flex items-center justify-center mx-auto mb-6 shadow-2xl shadow-blue-500/20 group-hover:rotate-12 transition-all duration-500">
+                        <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" className="text-white"><path d="m13 2-2 10h9L7 22l2-10H1L13 2z" fill="currentColor" /></svg>
                     </div>
-                    <h1 className="text-2xl font-bold text-white tracking-tight">Admin Portal</h1>
-                    <p className="text-blue-200/60 text-sm mt-2">Restricted Access Area</p>
+                    <h1 className="text-3xl font-black text-white tracking-tighter">ZENITH</h1>
+                    <p className="text-blue-200/40 text-[11px] uppercase tracking-[0.3em] font-bold mt-2">Administrative Core</p>
                 </div>
 
                 <div className="bg-[#1e293b] border border-slate-700 rounded-2xl p-8 shadow-2xl">
@@ -118,9 +118,9 @@ const AdminLogin = () => {
                     </form>
                 </div>
 
-                <div className="text-center mt-8 text-slate-600 text-xs">
-                    <p>Protected by Snapblu Security Systems v1.0</p>
-                    <p className="mt-1">Unauthorized access attempts will be logged.</p>
+                <div className="text-center mt-8 text-slate-700 text-[10px] uppercase font-bold tracking-[0.2em]">
+                    <p>Protected by Zenith Security Systems v2.4</p>
+                    <p className="mt-1 opacity-50 underline decoration-blue-500/50">Restricted Area: Authorized Personnel Only</p>
                 </div>
             </div>
         </div>

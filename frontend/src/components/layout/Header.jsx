@@ -41,13 +41,16 @@ const Header = ({ onMenuToggle }) => {
     return (
         <header className="bg-white dark:bg-dark-bg border-b border-gray-200 dark:border-dark-border sticky top-0 z-40 transition-colors">
             <div className="flex items-center justify-between px-6 py-4">
-                {/* Mobile Menu Button */}
-                <button
-                    onClick={onMenuToggle}
-                    className="lg:hidden p-2 hover:bg-gray-100 dark:hover:bg-dark-hover rounded-lg transition-colors text-gray-700 dark:text-gray-300"
-                >
-                    <Menu size={20} />
-                </button>
+                {/* Mobile Menu Button & Logo */}
+                <div className="flex items-center gap-4 lg:hidden">
+                    <button
+                        onClick={onMenuToggle}
+                        className="p-2 hover:bg-gray-100 dark:hover:bg-dark-hover rounded-lg transition-colors text-gray-700 dark:text-gray-300"
+                    >
+                        <Menu size={20} />
+                    </button>
+                    <span className="font-black tracking-tighter text-xl text-gray-900 dark:text-white">ZENITH</span>
+                </div>
 
                 {/* Spacer for desktop */}
                 <div className="hidden lg:block"></div>

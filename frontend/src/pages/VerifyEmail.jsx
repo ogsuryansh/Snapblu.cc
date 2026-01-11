@@ -39,11 +39,11 @@ const VerifyEmail = () => {
     return (
         <div className="min-h-screen bg-black text-white flex flex-col items-center justify-center p-4">
             {/* Header / Logo */}
-            <div className="mb-8 flex items-center gap-3">
-                <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-purple-600 rounded-lg flex items-center justify-center">
-                    <ShieldCheck size={24} className="text-white" />
+            <div className="mb-8 flex items-center gap-3 group">
+                <div className="w-10 h-10 bg-gradient-to-br from-blue-600 to-indigo-700 rounded-xl flex items-center justify-center shadow-lg shadow-blue-500/20 group-hover:rotate-12 transition-transform">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" className="text-white"><path d="m13 2-2 10h9L7 22l2-10H1L13 2z" fill="currentColor" /></svg>
                 </div>
-                <span className="text-2xl font-bold">Snapblu.cc</span>
+                <span className="text-2xl font-black tracking-tighter text-white">ZENITH</span>
             </div>
 
             <div className="max-w-md w-full bg-[#111] border border-[#333] rounded-2xl p-8 text-center">

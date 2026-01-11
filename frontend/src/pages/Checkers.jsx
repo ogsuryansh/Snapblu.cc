@@ -247,7 +247,7 @@ const Checkers = () => {
                                         </div>
                                     </div>
 
-                                    <p className="mt-8 text-[10px] text-slate-500 text-center uppercase tracking-[0.2em] font-black">Powered by Snapblu Security</p>
+                                    <p className="mt-8 text-[10px] text-slate-500 text-center uppercase tracking-[0.2em] font-black">Powered by ZENITH Security</p>
                                 </div>
                             )}
                         </div>

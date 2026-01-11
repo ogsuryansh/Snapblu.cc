@@ -25,10 +25,12 @@ import { useState, useRef, useEffect } from 'react';
 const Sidebar = ({ onClose }) => {
     const location = useLocation();
 
-    // Auto-close sidebar on route change (Mobile)
+    // Layout now handles closing on route change to prevent mount-time flicker
+    /* 
     useEffect(() => {
         if (onClose) onClose();
     }, [location.pathname]);
+    */
     const [openMenus, setOpenMenus] = useState({
         shop: true,
         orders: true,
@@ -149,10 +151,22 @@ const Sidebar = ({ onClose }) => {
     return (
         <aside className="w-64 bg-white dark:bg-dark-bg border-r border-gray-200 dark:border-dark-border h-screen sticky top-0 flex flex-col transition-colors z-30">
             <div className="flex-1 overflow-y-auto p-6 scrollbar-none">
+                {/* Brand Logo - ZENITH */}
+                <div className="mb-8 flex items-center gap-3">
+                    <div className="w-9 h-9 bg-gradient-to-br from-blue-600 to-indigo-700 rounded-xl flex items-center justify-center shadow-lg shadow-blue-500/20">
+                        <div className="text-white">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="m13 2-2 10h9L7 22l2-10H1L13 2z" fill="currentColor" /></svg>
+                        </div>
+                    </div>
+                    <h1 className="text-xl font-extrabold tracking-tighter text-gray-900 dark:text-white">
+                        ZENITH
+                    </h1>
+                </div>
+
                 {/* User Info Top */}
-                <div className="mb-6">
+                <div className="mb-6 bg-gray-50 dark:bg-dark-card/50 p-3 rounded-xl border border-gray-100 dark:border-dark-border">
                     <div className="flex items-center gap-2 mb-1">
-                        <div className="w-7 h-7 bg-gradient-to-br from-purple-500 to-pink-500 rounded-lg flex items-center justify-center text-white font-bold text-[10px]">
+                        <div className="w-7 h-7 bg-gradient-to-br from-blue-500 to-indigo-500 rounded-lg flex items-center justify-center text-white font-bold text-[10px]">
                             {userInitials}
                         </div>
                         <div>
@@ -162,7 +176,7 @@ const Sidebar = ({ onClose }) => {
                         </div>
                     </div>
                     <p className="text-[10px] text-gray-500 dark:text-gray-400 flex items-center gap-1">
-                        Welcome back 👋
+                        Status: <span className="text-green-500 font-bold">Verified</span>
                     </p>
                 </div>
 
