@@ -50,14 +50,17 @@ const Register = () => {
                 },
             };
 
-            await axios.post(
+            const { data } = await axios.post(
                 `${API_URL}/api/users`,
                 { username, email, password },
                 config
             );
 
-            setSuccess(true);
+            // AUTO LOGIN: Save user info and token to localStorage
+            localStorage.setItem('userInfo', JSON.stringify(data));
+
             setLoading(false);
+            navigate('/dashboard'); // Go straight to dashboard
         } catch (err) {
             setLoading(false);
             setError(err.response && err.response.data.message
@@ -209,8 +212,8 @@ const Register = () => {
                             <div className="flex items-center gap-3">
                                 <div className="checkbox-wrapper">
                                     <div className={`w-7 h-7 border-2 rounded flex items-center justify-center transition-all ${isVerified
-                                            ? 'bg-green-500 border-green-500'
-                                            : 'border-gray-500 bg-transparent'
+                                        ? 'bg-green-500 border-green-500'
+                                        : 'border-gray-500 bg-transparent'
                                         }`}>
                                         {isVerifying ? (
                                             <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>

@@ -9,8 +9,8 @@ import crypto from 'crypto';
 // @access  Public
 const authUser = asyncHandler(async (req, res) => {
     const { email, password } = req.body;
-
-    const user = await User.findOne({ email });
+    const normalizedEmail = email.toLowerCase().trim();
+    const user = await User.findOne({ email: normalizedEmail });
 
     if (user && (await user.matchPassword(password))) {
         // TEMPORARILY DISABLED: Email verification check
@@ -30,6 +30,7 @@ const authUser = asyncHandler(async (req, res) => {
             token: generateToken(user._id),
         });
     } else {
+        console.log(`Failed login attempt for: ${email}`);
         res.status(401);
         throw new Error('Invalid email or password');
     }
@@ -40,8 +41,8 @@ const authUser = asyncHandler(async (req, res) => {
 // @access  Public
 const registerUser = asyncHandler(async (req, res) => {
     const { username, email, password } = req.body;
-
-    const userExists = await User.findOne({ email });
+    const normalizedEmail = email.toLowerCase().trim();
+    const userExists = await User.findOne({ email: normalizedEmail });
 
     if (userExists) {
         res.status(400);
@@ -52,7 +53,7 @@ const registerUser = asyncHandler(async (req, res) => {
 
     const user = await User.create({
         username,
-        email,
+        email: normalizedEmail,
         password,
         verificationToken,
         isVerified: true, // TEMPORARILY: Set to true by default
