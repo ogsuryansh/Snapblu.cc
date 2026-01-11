@@ -29,20 +29,26 @@ const AdminLayout = () => {
         <div className="min-h-screen bg-[#0f172a] flex text-slate-100 relative">
 
             {/* Mobile Header */}
-            <div className="md:hidden fixed top-0 w-full bg-slate-900 border-b border-slate-700 z-40 px-4 py-3 flex items-center justify-between">
+            <header className="md:hidden fixed top-0 w-full bg-slate-900 border-b border-slate-700 z-[60] px-4 py-3 flex items-center justify-between">
                 <h1 className="text-lg font-bold bg-gradient-to-r from-blue-400 to-indigo-400 bg-clip-text text-transparent">
                     Snapblu Admin
                 </h1>
-                <button onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)} className="text-white p-1">
+                <button
+                    onClick={(e) => {
+                        e.stopPropagation();
+                        setIsMobileMenuOpen(!isMobileMenuOpen);
+                    }}
+                    className="text-white p-2 hover:bg-slate-800 rounded-lg transition-colors"
+                >
                     {isMobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
                 </button>
-            </div>
+            </header>
 
             {/* Overlay for Mobile */}
             {isMobileMenuOpen && (
                 <div
-                    className="fixed inset-0 bg-black/50 z-40 md:hidden backdrop-blur-sm"
-                    onClick={closeMobileMenu}
+                    className="fixed inset-0 bg-black/60 z-40 md:hidden backdrop-blur-md transition-opacity duration-300"
+                    onClick={() => setIsMobileMenuOpen(false)}
                 ></div>
             )}
 

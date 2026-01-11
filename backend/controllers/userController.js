@@ -30,9 +30,13 @@ const authUser = asyncHandler(async (req, res) => {
             token: generateToken(user._id),
         });
     } else {
-        console.log(`Failed login attempt for: ${email}`);
+        const userExists = await User.findOne({ email: normalizedEmail });
         res.status(401);
-        throw new Error('Invalid email or password');
+        if (!userExists) {
+            throw new Error('User not found in database');
+        } else {
+            throw new Error('Invalid password for this account');
+        }
     }
 });
 
