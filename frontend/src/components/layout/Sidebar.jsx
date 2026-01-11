@@ -9,6 +9,7 @@ import {
     FileStack,
     Layers,
     Search,
+    ShieldCheck,
     CheckCircle,
     ChevronDown,
     ChevronRight,
@@ -106,8 +107,7 @@ const Sidebar = () => {
             collapsible: true,
             icon: Search,
             items: [
-                { name: 'Bin Checker', icon: Search, path: '/bin-checker' },
-                { name: 'Card Checker', icon: CheckCircle, path: '/card-checker' },
+                { name: 'Checkers', icon: ShieldCheck, path: '/checkers' },
             ],
         },
         {

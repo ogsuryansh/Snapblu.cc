@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Outlet, Link, useNavigate, useLocation } from 'react-router-dom';
-import { Users, LayoutDashboard, LogOut, Package, CreditCard, Ticket, Settings, Menu, X } from 'lucide-react';
+import { Users, LayoutDashboard, LogOut, Package, CreditCard, Ticket, Settings, Menu, X, ShoppingBag } from 'lucide-react';
 
 const AdminLayout = () => {
     const navigate = useNavigate();
@@ -19,6 +19,7 @@ const AdminLayout = () => {
         { name: 'Dashboard', path: '/admin/dashboard', icon: LayoutDashboard },
         { name: 'Users', path: '/admin/users', icon: Users },
         { name: 'Products', path: '/admin/products', icon: Package },
+        { name: 'Orders', path: '/admin/orders', icon: ShoppingBag },
         { name: 'Deposits', path: '/admin/deposits', icon: CreditCard },
         { name: 'Tickets', path: '/admin/tickets', icon: Ticket },
         { name: 'Settings', path: '/admin/settings', icon: Settings },

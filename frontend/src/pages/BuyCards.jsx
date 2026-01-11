@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
-import { Filter, Columns3, ShoppingCart, X, CheckCircle, Copy } from 'lucide-react';
+import { Filter, Columns3, ShoppingCart, X, CheckCircle, Copy, ShieldCheck, RefreshCw } from 'lucide-react';
 import SearchBar from '../components/common/SearchBar';
 import Button from '../components/common/Button';
 import DataTable from '../components/common/DataTable';
@@ -16,6 +16,8 @@ const BuyCards = () => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [purchasing, setPurchasing] = useState(false);
+    const [checkingId, setCheckingId] = useState(null);
+    const [checkResults, setCheckResults] = useState({}); // { id: 'LIVE' | 'DEAD' }
 
     // Purchase Result Modal
     const [purchaseResult, setPurchaseResult] = useState(null); // { success: true, product: {} }
@@ -57,6 +59,24 @@ const BuyCards = () => {
         }
     };
 
+    const handleCheck = async (productId) => {
+        setCheckingId(productId);
+        try {
+            const userInfo = JSON.parse(localStorage.getItem('userInfo'));
+            const config = { headers: { Authorization: `Bearer ${userInfo.token}` } };
+            const { data } = await axios.post(`${API_URL}/api/products/check-card`, { id: productId }, config);
+
+            setCheckResults(prev => ({
+                ...prev,
+                [productId]: data.status
+            }));
+        } catch (err) {
+            alert(err.response?.data?.message || 'Check failed');
+        } finally {
+            setCheckingId(null);
+        }
+    };
+
     const copyToClipboard = (text) => {
         navigator.clipboard.writeText(text);
         alert('Copied to clipboard!');
@@ -86,20 +106,46 @@ const BuyCards = () => {
         },
         { key: 'issuer', label: 'Bank', sortable: true },
         {
+            key: 'status', label: 'Status',
+            render: (row) => {
+                const status = checkResults[row._id];
+                if (status === 'LIVE') return <span className="badge bg-green-500/10 text-green-500 border border-green-500/20">LIVE</span>;
+                if (status === 'DEAD') return <span className="badge bg-red-500/10 text-red-500 border border-red-500/20">DEAD</span>;
+                return <span className="text-slate-500 text-[10px] font-bold uppercase tracking-tighter">UNCHECKED</span>;
+            }
+        },
+        {
             key: 'price', label: 'Price', sortable: true,
             render: (row) => <span className="font-bold text-green-500">${row.price}</span>
         },
         {
             key: 'action', label: 'Action',
             render: (row) => (
-                <button
-                    onClick={() => handleBuy(row._id)}
-                    disabled={purchasing}
-                    className="bg-blue-600 hover:bg-blue-500 disabled:bg-gray-500 text-white p-2 rounded-lg shadow-sm transition-all hover:scale-105 active:scale-95"
-                    title="Buy Card"
-                >
-                    <ShoppingCart size={18} />
-                </button>
+                <div className="flex gap-2">
+                    <button
+                        onClick={() => handleCheck(row._id)}
+                        disabled={checkingId === row._id || !!checkResults[row._id]}
+                        className={`p-2 rounded-lg shadow-sm transition-all hover:scale-105 active:scale-95 ${checkResults[row._id]
+                            ? 'bg-slate-700 text-slate-500 cursor-not-allowed'
+                            : 'bg-slate-800 hover:bg-slate-700 text-blue-400'
+                            }`}
+                        title="Check Card"
+                    >
+                        {checkingId === row._id ? (
+                            <RefreshCw size={18} className="animate-spin" />
+                        ) : (
+                            <ShieldCheck size={18} />
+                        )}
+                    </button>
+                    <button
+                        onClick={() => handleBuy(row._id)}
+                        disabled={purchasing}
+                        className="bg-blue-600 hover:bg-blue-500 disabled:bg-gray-500 text-white p-2 rounded-lg shadow-sm transition-all hover:scale-105 active:scale-95"
+                        title="Buy Card"
+                    >
+                        <ShoppingCart size={18} />
+                    </button>
+                </div>
             )
         }
     ];

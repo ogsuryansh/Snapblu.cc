@@ -292,9 +292,15 @@ const Home = () => {
                                 <tbody className="divide-y divide-gray-200 dark:divide-dark-border">
                                     {stats.orders.map((order) => (
                                         <tr key={order._id} className="hover:bg-gray-50 dark:hover:bg-dark-hover transition-colors">
-                                            <td className="px-4 py-3 text-sm text-gray-900 dark:text-white font-medium">{order.type}</td>
-                                            <td className="px-4 py-3 text-sm font-mono text-blue-500">{order.bin}</td>
-                                            <td className="px-4 py-3 text-sm text-gray-700 dark:text-gray-300">{order.brand}</td>
+                                            <td className="px-4 py-3 text-sm text-gray-900 dark:text-white font-medium capitalize">
+                                                {order.type === 'log' ? 'Account/Log' : order.type === 'bulk' ? 'Bulk/Lot' : order.type}
+                                            </td>
+                                            <td className="px-4 py-3 text-sm font-mono text-blue-500">
+                                                {order.type === 'card' ? order.bin : '--'}
+                                            </td>
+                                            <td className="px-4 py-3 text-sm text-gray-700 dark:text-gray-300">
+                                                {order.type === 'card' ? order.brand : (order.name || '---')}
+                                            </td>
                                             <td className="px-4 py-3 text-sm font-bold text-green-500">${order.price}</td>
                                             <td className="px-4 py-3 text-sm text-gray-500">
                                                 {new Date(order.soldAt || order.updatedAt).toLocaleDateString()}

@@ -24,6 +24,10 @@ const productSchema = mongoose.Schema({
     level: { type: String },
     issuer: { type: String },
 
+    // Log/Account Specific Fields
+    category: { type: String },
+    description: { type: String },
+
     // Core details
     price: {
         type: Number,

@@ -36,11 +36,15 @@ const purchaseProduct = asyncHandler(async (req, res) => {
     await product.save();
 
     // 3. Create Transaction Record
+    const description = product.type === 'card'
+        ? `Purchased Card ${product.bin} - ${product.brand}`
+        : `Purchased Log: ${product.name}`;
+
     await Transaction.create({
         user: user._id,
         type: 'purchase',
         amount: product.price,
-        description: `Purchased ${product.type} ${product.bin} - ${product.brand}`,
+        description: description,
         status: 'completed'
     });
 
@@ -66,4 +70,64 @@ const getMyOrders = asyncHandler(async (req, res) => {
     res.json(products);
 });
 
-export { purchaseProduct, getMyOrders };
+// @desc    Get all sold products (Admin)
+// @route   GET /api/orders/all
+// @access  Private/Admin
+const getAllOrders = asyncHandler(async (req, res) => {
+    const orders = await Product.find({ isSold: true })
+        .populate('soldTo', 'username email')
+        .sort({ soldAt: -1 });
+    res.json(orders);
+});
+
+// @desc    Refund a purchase
+// @route   POST /api/orders/refund/:id
+// @access  Private/Admin
+const refundProduct = asyncHandler(async (req, res) => {
+    const product = await Product.findById(req.params.id);
+
+    if (!product) {
+        res.status(404);
+        throw new Error('Product not found');
+    }
+
+    if (!product.isSold) {
+        res.status(400);
+        throw new Error('Product is not sold');
+    }
+
+    const user = await User.findById(product.soldTo);
+    if (!user) {
+        res.status(404);
+        throw new Error('User who purchased this not found');
+    }
+
+    // 1. Add back balance
+    user.balance += product.price;
+    await user.save();
+
+    // 2. Mark Product as UNSOLD or DELETE IT (usually we keep it but marked refunded)
+    // For this app, let's mark it as isSold: false but maybe keep a history?
+    // Actually, usually we just delete the product to clear it from "Sold" lists, 
+    // OR we can add a 'status' field. Since we don't have 'status' on Product, 
+    // let's just mark it isSold: false (restocking it) or mark it something else.
+    // I'll mark it isSold = false and clear soldTo/soldAt.
+    product.isSold = false;
+    const oldSoldTo = product.soldTo;
+    product.soldTo = undefined;
+    product.soldAt = undefined;
+    await product.save();
+
+    // 3. Create Refund Transaction
+    await Transaction.create({
+        user: oldSoldTo,
+        type: 'refund',
+        amount: product.price,
+        description: `Refund for ${product.type === 'card' ? 'Card ' + product.bin : 'Log ' + product.name}`,
+        status: 'completed'
+    });
+
+    res.json({ success: true, message: 'Refund processed successfully' });
+});
+
+export { purchaseProduct, getMyOrders, getAllOrders, refundProduct };

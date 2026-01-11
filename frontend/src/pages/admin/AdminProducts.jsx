@@ -196,88 +196,194 @@ const AdminProducts = () => {
                     <div className="bg-slate-800 rounded-xl max-w-2xl w-full p-6 border border-slate-700 shadow-2xl overflow-y-auto max-h-[90vh]">
                         <div className="flex justify-between items-center mb-6 border-b border-slate-700 pb-4">
                             <h2 className="text-xl font-bold text-white flex items-center gap-2">
-                                <Plus className="text-blue-500" /> Add New Card
+                                <Plus className="text-blue-500" /> Add New Product
                             </h2>
-                            <button onClick={() => setIsModalOpen(false)} className="text-slate-400 hover:text-white">✕</button>
+                            <div className="flex bg-slate-900 p-1 rounded-lg border border-slate-700">
+                                <button
+                                    onClick={() => setFormData({ ...formData, type: 'card' })}
+                                    className={`px-3 py-1.5 rounded-md text-[10px] font-bold transition-all ${formData.type === 'card' ? 'bg-blue-600 text-white shadow-lg' : 'text-slate-500 hover:text-slate-300'}`}
+                                >
+                                    CARD
+                                </button>
+                                <button
+                                    onClick={() => setFormData({ ...formData, type: 'log' })}
+                                    className={`px-3 py-1.5 rounded-md text-[10px] font-bold transition-all ${formData.type === 'log' ? 'bg-blue-600 text-white shadow-lg' : 'text-slate-500 hover:text-slate-300'}`}
+                                >
+                                    LOG
+                                </button>
+                                <button
+                                    onClick={() => setFormData({ ...formData, type: 'bulk' })}
+                                    className={`px-3 py-1.5 rounded-md text-[10px] font-bold transition-all ${formData.type === 'bulk' ? 'bg-blue-600 text-white shadow-lg' : 'text-slate-500 hover:text-slate-300'}`}
+                                >
+                                    BULK
+                                </button>
+                            </div>
+                            <button onClick={() => setIsModalOpen(false)} className="text-slate-400 hover:text-white text-xl">✕</button>
                         </div>
 
                         <form onSubmit={handleSubmit} className="space-y-6">
-                            {/* Card Details */}
-                            <div className="space-y-4">
-                                <h3 className="text-xs font-bold text-blue-400 uppercase tracking-widest mb-2 flex items-center gap-2">
-                                    <CreditCard size={14} /> Financial Data
-                                </h3>
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                    <div className="col-span-2 md:col-span-1">
-                                        <label className="text-xs text-slate-400 mb-1 block">Card Number</label>
-                                        <input name="cardNumber" placeholder="4147 2024 1092 1029" className="input-field-admin" value={formData.cardNumber} onChange={handleChange} required />
-                                    </div>
-                                    <div className="grid grid-cols-2 gap-4">
-                                        <div>
-                                            <label className="text-xs text-slate-400 mb-1 block">Exp (MM/YYYY)</label>
-                                            <input name="exp" placeholder="12/28" className="input-field-admin" value={formData.exp} onChange={handleChange} required />
-                                        </div>
-                                        <div>
-                                            <label className="text-xs text-slate-400 mb-1 block">CVV</label>
-                                            <input name="cvv" placeholder="123" className="input-field-admin" value={formData.cvv} onChange={handleChange} required />
-                                        </div>
-                                    </div>
-                                    <div className="grid grid-cols-2 gap-4">
-                                        <div>
-                                            <label className="text-xs text-slate-400 mb-1 block">BIN</label>
-                                            <input name="bin" placeholder="414720" className="input-field-admin" value={formData.bin} onChange={handleChange} required />
-                                        </div>
-                                        <div>
-                                            <label className="text-xs text-slate-400 mb-1 block">Price ($)</label>
-                                            <div className="relative">
-                                                <DollarSign size={14} className="absolute left-3 top-3.5 text-slate-500" />
-                                                <input name="price" type="number" placeholder="5" className="input-field-admin pl-8" value={formData.price} onChange={handleChange} required />
+                            {formData.type === 'card' ? (
+                                <>
+                                    {/* Card Details */}
+                                    <div className="space-y-4">
+                                        <h3 className="text-xs font-bold text-blue-400 uppercase tracking-widest mb-2 flex items-center gap-2">
+                                            <CreditCard size={14} /> Financial Data
+                                        </h3>
+                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                            <div className="col-span-2 md:col-span-1">
+                                                <label className="text-xs text-slate-400 mb-1 block">Card Number</label>
+                                                <input name="cardNumber" placeholder="4147 2024 1092 1029" className="input-field-admin" value={formData.cardNumber} onChange={handleChange} required />
+                                            </div>
+                                            <div className="grid grid-cols-2 gap-4">
+                                                <div>
+                                                    <label className="text-xs text-slate-400 mb-1 block">Exp (MM/YYYY)</label>
+                                                    <input name="exp" placeholder="12/28" className="input-field-admin" value={formData.exp} onChange={handleChange} required />
+                                                </div>
+                                                <div>
+                                                    <label className="text-xs text-slate-400 mb-1 block">CVV</label>
+                                                    <input name="cvv" placeholder="123" className="input-field-admin" value={formData.cvv} onChange={handleChange} required />
+                                                </div>
+                                            </div>
+                                            <div className="grid grid-cols-2 gap-4">
+                                                <div>
+                                                    <label className="text-xs text-slate-400 mb-1 block">BIN</label>
+                                                    <input name="bin" placeholder="414720" className="input-field-admin" value={formData.bin} onChange={handleChange} required />
+                                                </div>
+                                                <div>
+                                                    <label className="text-xs text-slate-400 mb-1 block">Price ($)</label>
+                                                    <div className="relative">
+                                                        <DollarSign size={14} className="absolute left-3 top-3.5 text-slate-500" />
+                                                        <input name="price" type="number" placeholder="5" className="input-field-admin pl-8" value={formData.price} onChange={handleChange} required />
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div className="grid grid-cols-2 gap-4">
+                                                <div>
+                                                    <label className="text-xs text-slate-400 mb-1 block">Brand</label>
+                                                    <select name="brand" className="input-field-admin" value={formData.brand} onChange={handleChange}>
+                                                        <option value="VISA">VISA</option>
+                                                        <option value="MASTERCARD">MASTERCARD</option>
+                                                        <option value="AMEX">AMEX</option>
+                                                        <option value="DISCOVER">DISCOVER</option>
+                                                    </select>
+                                                </div>
+                                                <div>
+                                                    <label className="text-xs text-slate-400 mb-1 block">Issuer/Bank</label>
+                                                    <input name="issuer" placeholder="Bank of America" className="input-field-admin" value={formData.issuer} onChange={handleChange} />
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
-                                    <div className="grid grid-cols-2 gap-4">
-                                        <div>
-                                            <label className="text-xs text-slate-400 mb-1 block">Brand</label>
-                                            <select name="brand" className="input-field-admin" value={formData.brand} onChange={handleChange}>
-                                                <option value="VISA">VISA</option>
-                                                <option value="MASTERCARD">MASTERCARD</option>
-                                                <option value="AMEX">AMEX</option>
-                                                <option value="DISCOVER">DISCOVER</option>
-                                            </select>
-                                        </div>
-                                        <div>
-                                            <label className="text-xs text-slate-400 mb-1 block">Issuer/Bank</label>
-                                            <input name="issuer" placeholder="Bank of America" className="input-field-admin" value={formData.issuer} onChange={handleChange} />
+
+                                    {/* Personal Details */}
+                                    <div className="space-y-4 pt-4 border-t border-slate-700">
+                                        <h3 className="text-xs font-bold text-blue-400 uppercase tracking-widest mb-2 flex items-center gap-2">
+                                            <User size={14} /> Personal Info (Optional)
+                                        </h3>
+                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                            <input name="name" placeholder="Full Name" className="input-field-admin" value={formData.name} onChange={handleChange} />
+                                            <input name="email" placeholder="Email Address" className="input-field-admin" value={formData.email} onChange={handleChange} />
+                                            <input name="phone" placeholder="Phone Number" className="input-field-admin" value={formData.phone} onChange={handleChange} />
                                         </div>
                                     </div>
-                                </div>
-                            </div>
 
-                            {/* Personal Details */}
-                            <div className="space-y-4 pt-4 border-t border-slate-700">
-                                <h3 className="text-xs font-bold text-blue-400 uppercase tracking-widest mb-2 flex items-center gap-2">
-                                    <User size={14} /> Personal Info (Optional)
-                                </h3>
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                    <input name="name" placeholder="Full Name" className="input-field-admin" value={formData.name} onChange={handleChange} />
-                                    <input name="email" placeholder="Email Address" className="input-field-admin" value={formData.email} onChange={handleChange} />
-                                    <input name="phone" placeholder="Phone Number" className="input-field-admin" value={formData.phone} onChange={handleChange} />
-                                </div>
-                            </div>
-
-                            {/* Address Details */}
-                            <div className="space-y-4 pt-4 border-t border-slate-700">
-                                <h3 className="text-xs font-bold text-blue-400 uppercase tracking-widest mb-2 flex items-center gap-2">
-                                    <MapPin size={14} /> Location (Optional)
-                                </h3>
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                    <input name="address" placeholder="Address Line" className="input-field-admin md:col-span-2" value={formData.address} onChange={handleChange} />
-                                    <input name="city" placeholder="City" className="input-field-admin" value={formData.city} onChange={handleChange} />
-                                    <input name="state" placeholder="State/Region" className="input-field-admin" value={formData.state} onChange={handleChange} />
-                                    <input name="zip" placeholder="ZIP Code" className="input-field-admin" value={formData.zip} onChange={handleChange} />
-                                    <input name="country" placeholder="Country" className="input-field-admin" value={formData.country} onChange={handleChange} />
-                                </div>
-                            </div>
+                                    {/* Address Details */}
+                                    <div className="space-y-4 pt-4 border-t border-slate-700">
+                                        <h3 className="text-xs font-bold text-blue-400 uppercase tracking-widest mb-2 flex items-center gap-2">
+                                            <MapPin size={14} /> Location (Optional)
+                                        </h3>
+                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                            <input name="address" placeholder="Address Line" className="input-field-admin md:col-span-2" value={formData.address} onChange={handleChange} />
+                                            <input name="city" placeholder="City" className="input-field-admin" value={formData.city} onChange={handleChange} />
+                                            <input name="state" placeholder="State/Region" className="input-field-admin" value={formData.state} onChange={handleChange} />
+                                            <input name="zip" placeholder="ZIP Code" className="input-field-admin" value={formData.zip} onChange={handleChange} />
+                                            <input name="country" placeholder="Country" className="input-field-admin" value={formData.country} onChange={handleChange} />
+                                        </div>
+                                    </div>
+                                </>
+                            ) : formData.type === 'log' ? (
+                                <>
+                                    {/* Log Details */}
+                                    <div className="space-y-4">
+                                        <h3 className="text-xs font-bold text-blue-400 uppercase tracking-widest mb-2 flex items-center gap-2">
+                                            <Package size={14} /> Account Information
+                                        </h3>
+                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                            <div className="col-span-2">
+                                                <label className="text-xs text-slate-400 mb-1 block">Log Name/Title</label>
+                                                <input name="name" placeholder="Netflix Premium - 4K UHD" className="input-field-admin" value={formData.name} onChange={handleChange} required />
+                                            </div>
+                                            <div>
+                                                <label className="text-xs text-slate-400 mb-1 block">Category</label>
+                                                <input name="category" placeholder="Streaming" className="input-field-admin" value={formData.category} onChange={handleChange} required />
+                                            </div>
+                                            <div>
+                                                <label className="text-xs text-slate-400 mb-1 block">Price ($)</label>
+                                                <div className="relative">
+                                                    <DollarSign size={14} className="absolute left-3 top-3.5 text-slate-500" />
+                                                    <input name="price" type="number" placeholder="5" className="input-field-admin pl-8" value={formData.price} onChange={handleChange} required />
+                                                </div>
+                                            </div>
+                                            <div className="col-span-2">
+                                                <label className="text-xs text-slate-400 mb-1 block">Short Description</label>
+                                                <input name="description" placeholder="No 2FA, Private Account, Lifetime Warranty" className="input-field-admin" value={formData.description} onChange={handleChange} />
+                                            </div>
+                                            <div className="col-span-2">
+                                                <label className="text-xs text-slate-400 mb-1 block">Account Data (Credentials)</label>
+                                                <textarea
+                                                    name="data"
+                                                    placeholder="user@example.com:password123 | Full access"
+                                                    className="input-field-admin min-h-[100px] py-3"
+                                                    value={formData.data}
+                                                    onChange={handleChange}
+                                                    required
+                                                />
+                                            </div>
+                                        </div>
+                                    </div>
+                                </>
+                            ) : (
+                                <>
+                                    {/* Bulk Details */}
+                                    <div className="space-y-4">
+                                        <h3 className="text-xs font-bold text-blue-400 uppercase tracking-widest mb-2 flex items-center gap-2">
+                                            <Package size={14} /> Bulk Cards Lot
+                                        </h3>
+                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                            <div className="col-span-2">
+                                                <label className="text-xs text-slate-400 mb-1 block">Lot Title</label>
+                                                <input name="name" placeholder="50x Mixed US VISA/MC High Valid" className="input-field-admin" value={formData.name} onChange={handleChange} required />
+                                            </div>
+                                            <div>
+                                                <label className="text-xs text-slate-400 mb-1 block">Category (e.g. US MIXED)</label>
+                                                <input name="category" placeholder="US MIXED" className="input-field-admin" value={formData.category} onChange={handleChange} required />
+                                            </div>
+                                            <div>
+                                                <label className="text-xs text-slate-400 mb-1 block">Price ($)</label>
+                                                <div className="relative">
+                                                    <DollarSign size={14} className="absolute left-3 top-3.5 text-slate-500" />
+                                                    <input name="price" type="number" placeholder="100" className="input-field-admin pl-8" value={formData.price} onChange={handleChange} required />
+                                                </div>
+                                            </div>
+                                            <div className="col-span-2">
+                                                <label className="text-xs text-slate-400 mb-1 block">Lot Description</label>
+                                                <input name="description" placeholder="50 Credit Cards, Mixed Bins, No Refund on Bulk" className="input-field-admin" value={formData.description} onChange={handleChange} />
+                                            </div>
+                                            <div className="col-span-2">
+                                                <label className="text-xs text-slate-400 mb-1 block">Bulk Data (List of Cards)</label>
+                                                <textarea
+                                                    name="data"
+                                                    placeholder="414720XXXX|12/28|123...&#10;510510XXXX|10/26|456..."
+                                                    className="input-field-admin min-h-[150px] py-3 font-mono text-xs"
+                                                    value={formData.data}
+                                                    onChange={handleChange}
+                                                    required
+                                                />
+                                            </div>
+                                        </div>
+                                    </div>
+                                </>
+                            )}
 
                             <div className="flex justify-end gap-3 mt-8 pt-4 border-t border-slate-700">
                                 <button type="button" onClick={() => setIsModalOpen(false)} className="text-slate-400 hover:text-white px-6 py-2 transition-colors">Cancel</button>

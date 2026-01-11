@@ -9,8 +9,7 @@ import MyOrders from './pages/MyOrders';
 import MyCardOrders from './pages/MyCardOrders';
 import MyLogOrders from './pages/MyLogOrders';
 import MyBulkPurchases from './pages/MyBulkPurchases';
-import BinChecker from './pages/BinChecker';
-import CardChecker from './pages/CardChecker';
+import Checkers from './pages/Checkers';
 import ComponentShowcase from './pages/ComponentShowcase';
 import Login from './pages/Login';
 import Register from './pages/Register';
@@ -33,6 +32,8 @@ import AdminSettings from './pages/admin/AdminSettings';
 import AdminTickets from './pages/admin/AdminTickets';
 import AdminTicketDetails from './pages/admin/AdminTicketDetails';
 
+import AdminOrders from './pages/admin/AdminOrders';
+
 function App() {
   return (
     <ThemeProvider>
@@ -51,6 +52,7 @@ function App() {
               <Route path="dashboard" element={<AdminDashboard />} />
               <Route path="users" element={<UserList />} />
               <Route path="products" element={<AdminProducts />} />
+              <Route path="orders" element={<AdminOrders />} />
               <Route path="deposits" element={<AdminDeposits />} />
               <Route path="tickets" element={<AdminTickets />} />
               <Route path="tickets/:id" element={<AdminTicketDetails />} />
@@ -76,8 +78,7 @@ function App() {
               <Route path="tickets" element={<Tickets />} />
               <Route path="tickets/:id" element={<TicketDetails />} />
               <Route path="change-password" element={<ChangePassword />} />
-              <Route path="bin-checker" element={<BinChecker />} />
-              <Route path="card-checker" element={<CardChecker />} />
+              <Route path="checkers" element={<Checkers />} />
               <Route path="components" element={<ComponentShowcase />} />
             </Route>
           </Route>
