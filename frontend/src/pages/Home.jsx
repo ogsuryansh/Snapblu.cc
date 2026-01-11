@@ -1,4 +1,5 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import axios from 'axios';
 import {
     Wallet,
     ShoppingBag,
@@ -8,9 +9,90 @@ import {
     TrendingUp,
     RefreshCw,
 } from 'lucide-react';
+import API_URL from '../config/api';
 
 const Home = () => {
     const [activeTab, setActiveTab] = useState('overview');
+    const [loading, setLoading] = useState(true);
+    const [stats, setStats] = useState({
+        balance: 0,
+        totalOrders: 0,
+        totalSpent: 0,
+        cardsPurchased: 0,
+        totalDeposits: 0,
+        approvedDeposits: 0,
+        pendingDeposits: 0,
+        depositAmount: 0,
+        completedOrders: 0,
+        refundedOrders: 0,
+        totalRefunded: 0,
+        partialOrders: 0,
+        orders: [],
+        deposits: [],
+    });
+
+    useEffect(() => {
+        fetchDashboardData();
+    }, []);
+
+    const fetchDashboardData = async () => {
+        setLoading(true);
+        try {
+            const userInfo = JSON.parse(localStorage.getItem('userInfo'));
+            const config = { headers: { Authorization: `Bearer ${userInfo.token}` } };
+
+            // Fetch user profile for balance
+            const { data: profile } = await axios.get(`${API_URL}/api/users/me`, config);
+
+            // Fetch orders
+            const { data: orders } = await axios.get(`${API_URL}/api/orders/myorders`, config);
+
+            // Fetch transactions for total spent
+            const { data: transactions } = await axios.get(`${API_URL}/api/transactions`, config);
+
+            // Calculate stats
+            const totalSpent = orders.reduce((sum, order) => sum + (order.price || 0), 0);
+            const cardsPurchased = orders.filter(o => o.type === 'card').length;
+
+            // Fetch deposits for the deposits tab
+            const { data: deposits } = await axios.get(`${API_URL}/api/deposits`, config);
+
+            // Calculate deposit stats
+            const approvedDeposits = deposits.filter(d => d.status === 'approved').length;
+            const pendingDeposits = deposits.filter(d => d.status === 'pending').length;
+            const rejectedDeposits = deposits.filter(d => d.status === 'rejected').length;
+
+            // Calculate total deposit amount from approved deposits
+            const approvedDepositsList = deposits.filter(d => d.status === 'approved');
+            const totalDepositAmount = approvedDepositsList.reduce((sum, d) => sum + (d.amount || 0), 0);
+
+            // Calculate refunded amount (from transactions)
+            const refundTxns = transactions.filter(t => t.type === 'refund' && t.status === 'completed');
+            const totalRefunded = refundTxns.reduce((sum, t) => sum + (t.amount || 0), 0);
+
+            setStats({
+                balance: profile.balance || 0,
+                totalOrders: orders.length,
+                totalSpent: totalSpent,
+                cardsPurchased: cardsPurchased,
+                totalDeposits: deposits.length,
+                approvedDeposits: approvedDeposits,
+                pendingDeposits: pendingDeposits,
+                depositAmount: totalDepositAmount,
+                completedOrders: orders.length,
+                refundedOrders: refundTxns.length,
+                totalRefunded: totalRefunded,
+                partialOrders: 0,
+                orders: orders, // Store orders for purchases tab
+                deposits: deposits, // Store deposits for deposits tab
+            });
+
+            setLoading(false);
+        } catch (error) {
+            console.error('Error fetching dashboard data:', error);
+            setLoading(false);
+        }
+    };
 
     const tabs = [
         { id: 'overview', label: 'Overview' },
@@ -21,7 +103,7 @@ const Home = () => {
     const overviewStats = [
         {
             title: 'Current Balance',
-            value: '$0.00',
+            value: `$${stats.balance.toFixed(2)}`,
             subtitle: 'Available balance',
             icon: Wallet,
             borderColor: 'border-l-4 border-l-blue-500',
@@ -30,8 +112,8 @@ const Home = () => {
         },
         {
             title: 'Total Orders',
-            value: '0',
-            subtitle: '0 completed',
+            value: stats.totalOrders.toString(),
+            subtitle: `${stats.completedOrders} completed`,
             icon: ShoppingBag,
             borderColor: 'border-l-4 border-l-purple-500',
             iconBg: 'bg-purple-500/10',
@@ -39,8 +121,8 @@ const Home = () => {
         },
         {
             title: 'Total Spent',
-            value: '$0.00',
-            subtitle: '$0.00 refunded',
+            value: `$${stats.totalSpent.toFixed(2)}`,
+            subtitle: `$${stats.totalRefunded.toFixed(2)} refunded`,
             icon: DollarSign,
             borderColor: 'border-l-4 border-l-green-500',
             iconBg: 'bg-green-500/10',
@@ -48,7 +130,7 @@ const Home = () => {
         },
         {
             title: 'Cards Purchased',
-            value: '0',
+            value: stats.cardsPurchased.toString(),
             subtitle: 'Total cards bought',
             icon: CreditCard,
             borderColor: 'border-l-4 border-l-orange-500',
@@ -57,8 +139,8 @@ const Home = () => {
         },
         {
             title: 'Total Deposits',
-            value: '0',
-            subtitle: '0 paid, 0 pending',
+            value: stats.totalDeposits.toString(),
+            subtitle: `${stats.approvedDeposits} paid, ${stats.pendingDeposits} pending`,
             icon: Banknote,
             borderColor: 'border-l-4 border-l-blue-500',
             iconBg: 'bg-blue-500/10',
@@ -67,8 +149,8 @@ const Home = () => {
         },
         {
             title: 'Deposit Amount',
-            value: '$0.00',
-            subtitle: 'Avg: $0.00',
+            value: `$${stats.depositAmount.toFixed(2)}`,
+            subtitle: stats.totalDeposits > 0 ? `Avg: $${(stats.depositAmount / stats.totalDeposits).toFixed(2)}` : 'Avg: $0.00',
             icon: TrendingUp,
             borderColor: 'border-l-4 border-l-cyan-500',
             iconBg: 'bg-cyan-500/10',
@@ -86,9 +168,9 @@ const Home = () => {
             fullWidth: false,
             isStatusCard: true,
             statusData: [
-                { label: 'Completed', value: '0', color: 'text-cyan-500' },
-                { label: 'Refunded', value: '0', color: 'text-red-500' },
-                { label: 'Partial', value: '0', color: 'text-orange-500' },
+                { label: 'Completed', value: stats.completedOrders.toString(), color: 'text-cyan-500' },
+                { label: 'Refunded', value: stats.refundedOrders.toString(), color: 'text-red-500' },
+                { label: 'Partial', value: stats.partialOrders.toString(), color: 'text-orange-500' },
             ],
         },
     ];
@@ -118,7 +200,16 @@ const Home = () => {
             </div>
 
             {/* Stats Grid */}
-            {activeTab === 'overview' && (
+            {loading ? (
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                    {[1, 2, 3, 4].map((i) => (
+                        <div key={i} className="card p-4 animate-pulse">
+                            <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-1/2 mb-2"></div>
+                            <div className="h-8 bg-gray-200 dark:bg-gray-700 rounded w-3/4"></div>
+                        </div>
+                    ))}
+                </div>
+            ) : activeTab === 'overview' && (
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                     {overviewStats.slice(0, 4).map((stat, idx) => (
                         <div
@@ -179,18 +270,87 @@ const Home = () => {
             )}
 
             {activeTab === 'purchases' && (
-                <div className="card p-12 text-center">
-                    <ShoppingBag size={48} className="mx-auto mb-4 text-gray-400 dark:text-gray-600" />
-                    <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">No purchases yet</h3>
-                    <p className="text-sm text-gray-600 dark:text-gray-400">Your purchase history will appear here.</p>
+                <div className="card">
+                    {stats.orders.length === 0 ? (
+                        <div className="p-12 text-center">
+                            <ShoppingBag size={48} className="mx-auto mb-4 text-gray-400 dark:text-gray-600" />
+                            <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">No purchases yet</h3>
+                            <p className="text-sm text-gray-600 dark:text-gray-400">Your purchase history will appear here.</p>
+                        </div>
+                    ) : (
+                        <div className="overflow-x-auto">
+                            <table className="w-full">
+                                <thead className="bg-gray-50 dark:bg-dark-hover border-b border-gray-200 dark:border-dark-border">
+                                    <tr>
+                                        <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600 dark:text-gray-400 uppercase">Product</th>
+                                        <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600 dark:text-gray-400 uppercase">BIN</th>
+                                        <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600 dark:text-gray-400 uppercase">Brand</th>
+                                        <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600 dark:text-gray-400 uppercase">Price</th>
+                                        <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600 dark:text-gray-400 uppercase">Date</th>
+                                    </tr>
+                                </thead>
+                                <tbody className="divide-y divide-gray-200 dark:divide-dark-border">
+                                    {stats.orders.map((order) => (
+                                        <tr key={order._id} className="hover:bg-gray-50 dark:hover:bg-dark-hover transition-colors">
+                                            <td className="px-4 py-3 text-sm text-gray-900 dark:text-white font-medium">{order.type}</td>
+                                            <td className="px-4 py-3 text-sm font-mono text-blue-500">{order.bin}</td>
+                                            <td className="px-4 py-3 text-sm text-gray-700 dark:text-gray-300">{order.brand}</td>
+                                            <td className="px-4 py-3 text-sm font-bold text-green-500">${order.price}</td>
+                                            <td className="px-4 py-3 text-sm text-gray-500">
+                                                {new Date(order.soldAt || order.updatedAt).toLocaleDateString()}
+                                            </td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </table>
+                        </div>
+                    )}
                 </div>
             )}
 
             {activeTab === 'deposits' && (
-                <div className="card p-12 text-center">
-                    <Wallet size={48} className="mx-auto mb-4 text-gray-400 dark:text-gray-600" />
-                    <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">No deposits yet</h3>
-                    <p className="text-sm text-gray-600 dark:text-gray-400">Your deposit history will appear here.</p>
+                <div className="card">
+                    {stats.deposits.length === 0 ? (
+                        <div className="p-12 text-center">
+                            <Wallet size={48} className="mx-auto mb-4 text-gray-400 dark:text-gray-600" />
+                            <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">No deposits yet</h3>
+                            <p className="text-sm text-gray-600 dark:text-gray-400">Your deposit history will appear here.</p>
+                        </div>
+                    ) : (
+                        <div className="overflow-x-auto">
+                            <table className="w-full">
+                                <thead className="bg-gray-50 dark:bg-dark-hover border-b border-gray-200 dark:border-dark-border">
+                                    <tr>
+                                        <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600 dark:text-gray-400 uppercase">Amount</th>
+                                        <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600 dark:text-gray-400 uppercase">Payment Method</th>
+                                        <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600 dark:text-gray-400 uppercase">Status</th>
+                                        <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600 dark:text-gray-400 uppercase">Date</th>
+                                    </tr>
+                                </thead>
+                                <tbody className="divide-y divide-gray-200 dark:divide-dark-border">
+                                    {stats.deposits.map((deposit) => (
+                                        <tr key={deposit._id} className="hover:bg-gray-50 dark:hover:bg-dark-hover transition-colors">
+                                            <td className="px-4 py-3 text-sm font-bold text-green-500">${deposit.amount}</td>
+                                            <td className="px-4 py-3 text-sm text-gray-700 dark:text-gray-300">{deposit.method || 'Crypto'}</td>
+                                            <td className="px-4 py-3 text-sm">
+                                                <span className={`px-2 py-1 rounded-full text-xs font-semibold ${deposit.status === 'approved'
+                                                    ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400'
+                                                    : deposit.status === 'rejected'
+                                                        ? 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400'
+                                                        : 'bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400'
+                                                    }`}>
+                                                    {deposit.status}
+                                                </span>
+                                            </td>
+                                            <td className="px-4 py-3 text-sm text-gray-500">
+                                                {new Date(deposit.createdAt).toLocaleDateString()}
+                                            </td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </table>
+                        </div>
+                    )}
                 </div>
             )}
         </div>

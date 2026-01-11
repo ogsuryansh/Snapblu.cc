@@ -95,9 +95,10 @@ const BuyCards = () => {
                 <button
                     onClick={() => handleBuy(row._id)}
                     disabled={purchasing}
-                    className="bg-blue-600 hover:bg-blue-500 disabled:bg-gray-500 text-white px-4 py-1.5 rounded-lg text-xs font-bold shadow-sm transition-all hover:scale-105 active:scale-95"
+                    className="bg-blue-600 hover:bg-blue-500 disabled:bg-gray-500 text-white p-2 rounded-lg shadow-sm transition-all hover:scale-105 active:scale-95"
+                    title="Buy Card"
                 >
-                    {purchasing ? '...' : 'BUY'}
+                    <ShoppingCart size={18} />
                 </button>
             )
         }

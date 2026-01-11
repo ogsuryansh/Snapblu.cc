@@ -30,6 +30,8 @@ import UserList from './pages/admin/UserList';
 import AdminProducts from './pages/admin/AdminProducts';
 import AdminDeposits from './pages/admin/AdminDeposits';
 import AdminSettings from './pages/admin/AdminSettings';
+import AdminTickets from './pages/admin/AdminTickets';
+import AdminTicketDetails from './pages/admin/AdminTicketDetails';
 
 function App() {
   return (
@@ -50,6 +52,8 @@ function App() {
               <Route path="users" element={<UserList />} />
               <Route path="products" element={<AdminProducts />} />
               <Route path="deposits" element={<AdminDeposits />} />
+              <Route path="tickets" element={<AdminTickets />} />
+              <Route path="tickets/:id" element={<AdminTicketDetails />} />
               <Route path="settings" element={<AdminSettings />} />
             </Route>
           </Route>

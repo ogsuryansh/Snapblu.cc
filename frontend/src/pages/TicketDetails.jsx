@@ -88,7 +88,7 @@ const TicketDetails = () => {
             </div>
 
             {/* Messages Area */}
-            <div className="flex-1 bg-gray-50 dark:bg-slate-900 overflow-y-auto p-6 space-y-6">
+            <div className="flex-1 bg-gray-50 dark:bg-slate-900 max-h-[600px] overflow-y-auto p-6 space-y-6" style={{ scrollBehavior: 'smooth' }}>
                 {ticket.messages.map((msg, idx) => {
                     const isAdmin = msg.sender === 'Admin';
                     return (

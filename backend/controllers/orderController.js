@@ -60,7 +60,9 @@ const purchaseProduct = asyncHandler(async (req, res) => {
 // @access  Private
 const getMyOrders = asyncHandler(async (req, res) => {
     // Find products sold to this user
-    const products = await Product.find({ soldTo: req.user._id, isSold: true }).sort({ soldAt: -1 });
+    // Sort by soldAt (newest first), fallback to updatedAt for old purchases without soldAt
+    const products = await Product.find({ soldTo: req.user._id, isSold: true })
+        .sort({ soldAt: -1, updatedAt: -1 });
     res.json(products);
 });
 
