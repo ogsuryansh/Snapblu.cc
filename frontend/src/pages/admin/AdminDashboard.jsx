@@ -8,10 +8,12 @@ const AdminDashboard = () => {
         totalUsers: 0,
         totalStock: 0,
         totalSales: 0,
-        totalRevenue: 0
+        totalRevenue: 0,
+        recentActivity: []
     });
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+    const navigate = useNavigate();
 
     useEffect(() => {
         const fetchStats = async () => {
@@ -33,7 +35,7 @@ const AdminDashboard = () => {
     const cards = [
         {
             title: 'Total Revenue',
-            value: `$${stats.totalRevenue.toFixed(2)}`,
+            value: `$${(stats.totalRevenue || 0).toFixed(2)}`,
             icon: DollarSign,
             color: 'bg-green-500',
             textColor: 'text-green-500',
@@ -42,7 +44,7 @@ const AdminDashboard = () => {
         },
         {
             title: 'Active Stock',
-            value: stats.totalStock,
+            value: stats.totalStock || 0,
             icon: CreditCard,
             color: 'bg-blue-500',
             textColor: 'text-blue-500',
@@ -51,7 +53,7 @@ const AdminDashboard = () => {
         },
         {
             title: 'Total Sales',
-            value: stats.totalSales,
+            value: stats.totalSales || 0,
             icon: ShoppingCart,
             color: 'bg-purple-500',
             textColor: 'text-purple-500',
@@ -60,7 +62,7 @@ const AdminDashboard = () => {
         },
         {
             title: 'Total Users',
-            value: stats.totalUsers,
+            value: stats.totalUsers || 0,
             icon: Users,
             color: 'bg-orange-500',
             textColor: 'text-orange-500',
@@ -95,34 +97,59 @@ const AdminDashboard = () => {
                                     <card.icon size={24} />
                                 </div>
                             </div>
-                            {/* Decorative Background Blur */}
-                            <div className={`absolute -bottom-4 -right-4 w-24 h-24 ${card.bgColor} rounded-full blur-3xl opacity-20`}></div>
                         </div>
                     ))}
                 </div>
             )}
 
-            {/* Quick Actions & Recent Activity Placeholder */}
+            {/* Quick Actions & Recent Activity */}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mt-8">
                 <div className="bg-slate-800 p-6 rounded-xl border border-slate-700">
                     <div className="flex items-center justify-between mb-4">
                         <h3 className="text-xl font-bold text-white">Recent Activity</h3>
-                        <button className="text-sm text-blue-400 hover:text-blue-300">View All</button>
+                        <Link to="/admin/orders" className="text-sm text-blue-400 hover:text-blue-300">View All</Link>
                     </div>
-                    <div className="text-slate-400 text-sm text-center py-8">
-                        No recent transactions.
+                    <div className="space-y-4">
+                        {stats.recentActivity && stats.recentActivity.length > 0 ? (
+                            stats.recentActivity.map((activity) => (
+                                <div key={activity._id} className="flex items-center justify-between p-3 bg-slate-900/50 rounded-lg border border-slate-700">
+                                    <div className="flex items-center gap-3">
+                                        <div className={`p-2 rounded-full ${activity.type === 'purchase' ? 'bg-green-500/10 text-green-500' : 'bg-blue-500/10 text-blue-500'}`}>
+                                            {activity.type === 'purchase' ? <ShoppingCart size={16} /> : <DollarSign size={16} />}
+                                        </div>
+                                        <div>
+                                            <p className="text-sm font-medium text-white line-clamp-1">{activity.description}</p>
+                                            <p className="text-xs text-slate-500">{activity.user?.username || 'Unknown'} • {new Date(activity.createdAt).toLocaleTimeString()}</p>
+                                        </div>
+                                    </div>
+                                    <div className={`text-sm font-bold ${activity.type === 'purchase' ? 'text-red-400' : 'text-green-400'}`}>
+                                        {activity.type === 'purchase' ? '-' : '+'}${activity.amount}
+                                    </div>
+                                </div>
+                            ))
+                        ) : (
+                            <div className="text-slate-400 text-sm text-center py-8">
+                                No recent activity found.
+                            </div>
+                        )}
                     </div>
                 </div>
 
                 <div className="bg-slate-800 p-6 rounded-xl border border-slate-700">
                     <h3 className="text-xl font-bold text-white mb-4">Quick Actions</h3>
                     <div className="grid grid-cols-2 gap-4">
-                        <button className="bg-blue-600 hover:bg-blue-500 text-white p-4 rounded-lg flex flex-col items-center gap-2 transition-colors">
-                            <Package size={24} />
+                        <button
+                            onClick={() => navigate('/admin/products')}
+                            className="bg-blue-600 hover:bg-blue-500 text-white p-4 rounded-lg flex flex-col items-center gap-2 transition-colors group shadow-lg shadow-blue-900/20"
+                        >
+                            <Package size={24} className="group-hover:scale-110 transition-transform" />
                             <span className="font-medium">Add Product</span>
                         </button>
-                        <button className="bg-slate-700 hover:bg-slate-600 text-white p-4 rounded-lg flex flex-col items-center gap-2 transition-colors">
-                            <Users size={24} />
+                        <button
+                            onClick={() => navigate('/admin/users')}
+                            className="bg-slate-700 hover:bg-slate-600 text-white p-4 rounded-lg flex flex-col items-center gap-2 transition-colors group"
+                        >
+                            <Users size={24} className="group-hover:scale-110 transition-transform" />
                             <span className="font-medium">Manage Users</span>
                         </button>
                     </div>

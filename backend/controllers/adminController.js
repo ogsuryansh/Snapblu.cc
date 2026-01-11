@@ -2,6 +2,8 @@ import asyncHandler from 'express-async-handler';
 import User from '../models/userModel.js';
 import Product from '../models/productModel.js';
 
+import Transaction from '../models/transactionModel.js';
+
 // @desc    Get admin dashboard statistics
 // @route   GET /api/admin/stats
 // @access  Private/Admin
@@ -11,6 +13,12 @@ const getDashboardStats = asyncHandler(async (req, res) => {
 
     // 2. Product Stats
     const products = await Product.find({});
+
+    // 3. Recent Activity (Latest 5 transactions)
+    const recentActivity = await Transaction.find({})
+        .populate('user', 'username email')
+        .sort({ createdAt: -1 })
+        .limit(5);
 
     let totalStock = 0;
     let totalSales = 0;
@@ -29,7 +37,8 @@ const getDashboardStats = asyncHandler(async (req, res) => {
         totalUsers,
         totalStock,
         totalSales,
-        totalRevenue
+        totalRevenue: Number(totalRevenue.toFixed(2)),
+        recentActivity
     });
 });
 
