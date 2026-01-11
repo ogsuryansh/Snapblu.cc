@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Eye, EyeOff, ShieldCheck, Mail, CheckCircle2 } from 'lucide-react';
+import { Eye, EyeOff, ShieldCheck, Mail, CheckCircle2, ShoppingBag } from 'lucide-react';
 import axios from 'axios';
 import API_URL from '../config/api';
 

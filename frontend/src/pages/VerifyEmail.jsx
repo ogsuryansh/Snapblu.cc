@@ -1,7 +1,7 @@
 import { useEffect, useState, useRef } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import axios from 'axios';
-import { CheckCircle2, XCircle, Loader2, ShieldCheck } from 'lucide-react';
+import { CheckCircle2, XCircle, Loader2, ShieldCheck, ShoppingBag } from 'lucide-react';
 import API_URL from '../config/api';
 
 const VerifyEmail = () => {
