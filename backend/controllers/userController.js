@@ -13,10 +13,13 @@ const authUser = asyncHandler(async (req, res) => {
     const user = await User.findOne({ email });
 
     if (user && (await user.matchPassword(password))) {
+        // TEMPORARILY DISABLED: Email verification check
+        /*
         if (!user.isVerified) {
             res.status(401);
             throw new Error('Please verify your email address before logging in.');
         }
+        */
 
         res.json({
             _id: user._id,
@@ -52,6 +55,7 @@ const registerUser = asyncHandler(async (req, res) => {
         email,
         password,
         verificationToken,
+        isVerified: true, // TEMPORARILY: Set to true by default
     });
 
     if (user) {
@@ -158,7 +162,13 @@ const registerUser = asyncHandler(async (req, res) => {
             });
 
             res.status(201).json({
-                message: `Registration successful! Verification email sent to ${user.email}`,
+                _id: user._id,
+                username: user.username,
+                email: user.email,
+                isAdmin: user.isAdmin,
+                balance: user.balance,
+                token: generateToken(user._id),
+                message: `Registration successful!`,
             });
         } catch (error) {
             console.error("Email send error:", error);
