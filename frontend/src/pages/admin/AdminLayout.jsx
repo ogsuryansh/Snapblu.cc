@@ -1,11 +1,27 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Outlet, Link, useNavigate, useLocation } from 'react-router-dom';
-import { Users, LayoutDashboard, LogOut, Package, CreditCard, Ticket, Settings, Menu, X, ShoppingBag } from 'lucide-react';
+import {
+    Users,
+    LayoutDashboard,
+    LogOut,
+    Package,
+    CreditCard,
+    Ticket,
+    Settings,
+    Menu,
+    X,
+    ShoppingBag
+} from 'lucide-react';
 
 const AdminLayout = () => {
     const navigate = useNavigate();
     const location = useLocation();
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+
+    // Auto-close sidebar on route change (Mobile)
+    useEffect(() => {
+        setIsMobileMenuOpen(false);
+    }, [location.pathname]);
 
     const handleLogout = () => {
         localStorage.removeItem('adminInfo');
@@ -13,7 +29,6 @@ const AdminLayout = () => {
     };
 
     const isActive = (path) => location.pathname === path;
-    const closeMobileMenu = () => setIsMobileMenuOpen(false);
 
     const navItems = [
         { name: 'Dashboard', path: '/admin/dashboard', icon: LayoutDashboard },
@@ -26,80 +41,81 @@ const AdminLayout = () => {
     ];
 
     return (
-        <div className="min-h-screen bg-[#0f172a] flex text-slate-100 relative">
+        <div className="min-h-screen bg-[#0f172a] text-slate-100 flex flex-col md:flex-row">
 
             {/* Mobile Header */}
-            <header className="md:hidden fixed top-0 w-full bg-slate-900 border-b border-slate-700 z-[60] px-4 py-3 flex items-center justify-between">
-                <h1 className="text-lg font-bold bg-gradient-to-r from-blue-400 to-indigo-400 bg-clip-text text-transparent">
-                    Snapblu Admin
-                </h1>
+            <div className="md:hidden flex items-center justify-between px-4 py-4 bg-slate-900 border-b border-slate-800 sticky top-0 z-[100]">
+                <div className="flex items-center gap-2 font-bold text-xl">
+                    <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
+                        <ShoppingBag size={18} className="text-white" />
+                    </div>
+                    <span className="bg-gradient-to-r from-blue-400 to-indigo-400 bg-clip-text text-transparent">
+                        Snapblu Admin
+                    </span>
+                </div>
                 <button
-                    onClick={(e) => {
-                        e.stopPropagation();
-                        setIsMobileMenuOpen(!isMobileMenuOpen);
-                    }}
-                    className="text-white p-2 hover:bg-slate-800 rounded-lg transition-colors"
+                    onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+                    className="p-2 text-slate-300 hover:text-white"
                 >
                     {isMobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
                 </button>
-            </header>
+            </div>
 
-            {/* Overlay for Mobile */}
+            {/* Sidebar Overlay */}
             {isMobileMenuOpen && (
                 <div
-                    className="fixed inset-0 bg-black/60 z-40 md:hidden backdrop-blur-md transition-opacity duration-300"
+                    className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[90] md:hidden"
                     onClick={() => setIsMobileMenuOpen(false)}
-                ></div>
+                />
             )}
 
             {/* Sidebar */}
             <aside className={`
-                fixed md:static inset-y-0 left-0 w-64 bg-slate-900 border-r border-slate-700 z-50 transform transition-transform duration-200 ease-in-out
-                ${isMobileMenuOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'}
-                flex flex-col h-full
+                fixed inset-y-0 left-0 w-64 bg-slate-900 border-r border-slate-800 z-[100] transform transition-transform duration-300 ease-in-out
+                ${isMobileMenuOpen ? 'translate-x-0' : '-translate-x-full'}
+                md:relative md:translate-x-0 flex flex-col h-screen
             `}>
-                <div className="p-6 hidden md:block">
-                    <h1 className="text-xl font-bold bg-gradient-to-r from-blue-400 to-indigo-400 bg-clip-text text-transparent">
+                <div className="p-6 hidden md:flex items-center gap-3 border-b border-slate-800/50">
+                    <div className="w-10 h-10 bg-blue-600 rounded-xl flex items-center justify-center shadow-lg shadow-blue-900/20">
+                        <ShoppingBag size={24} className="text-white" />
+                    </div>
+                    <span className="font-bold text-xl bg-gradient-to-r from-blue-400 to-indigo-400 bg-clip-text text-transparent">
                         Snapblu Admin
-                    </h1>
+                    </span>
                 </div>
 
-                <div className="p-4 md:hidden border-b border-slate-800 flex items-center justify-between">
-                    <span className="text-sm font-semibold text-slate-400">Menu</span>
-                    <button onClick={closeMobileMenu}><X size={20} className="text-slate-400" /></button>
-                </div>
-
-                <nav className="flex-1 px-4 space-y-1 mt-4 md:mt-0 overflow-y-auto">
+                <nav className="flex-1 px-4 py-8 space-y-2 overflow-y-auto">
                     {navItems.map((item) => (
                         <Link
                             key={item.path}
                             to={item.path}
-                            onClick={closeMobileMenu}
-                            className={`flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium transition-colors ${isActive(item.path)
-                                ? 'bg-blue-600 text-white shadow-lg shadow-blue-900/50'
-                                : 'text-slate-400 hover:text-white hover:bg-slate-800'
+                            className={`flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all group ${isActive(item.path)
+                                    ? 'bg-blue-600 text-white shadow-lg shadow-blue-900/40'
+                                    : 'text-slate-400 hover:text-white hover:bg-slate-800'
                                 }`}
                         >
-                            <item.icon size={18} />
+                            <item.icon size={20} className={isActive(item.path) ? 'text-white' : 'text-slate-500 group-hover:text-blue-400'} />
                             {item.name}
                         </Link>
                     ))}
                 </nav>
 
-                <div className="p-4 border-t border-slate-800 mt-auto">
+                <div className="p-4 border-t border-slate-800">
                     <button
                         onClick={handleLogout}
-                        className="flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium text-red-400 hover:text-red-300 hover:bg-red-900/10 w-full transition-colors"
+                        className="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-bold text-red-500 hover:bg-red-500/10 w-full transition-colors group"
                     >
-                        <LogOut size={18} />
+                        <LogOut size={20} className="group-hover:translate-x-1 transition-transform" />
                         Logout
                     </button>
                 </div>
             </aside>
 
             {/* Main Content */}
-            <main className="flex-1 w-full md:w-auto min-h-screen bg-[#0f172a] pt-16 md:pt-0 overflow-x-hidden">
-                <Outlet />
+            <main className="flex-1 overflow-x-hidden pt-0 md:pt-0">
+                <div className="p-4 md:p-8">
+                    <Outlet />
+                </div>
             </main>
         </div>
     );
