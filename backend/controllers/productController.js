@@ -112,7 +112,8 @@ const addProduct = asyncHandler(async (req, res) => {
         // Log/Account or Bulk
         product = new Product({
             type: type === 'log' ? 'log' : 'bulk',
-            name, // For logs/bulk, this is the Title
+            cardNumber: name || (type === 'log' ? 'Unknown Log' : 'Unknown Bulk'), // Reusing cardNumber field for Title
+            name: name || (type === 'log' ? 'Unknown Log' : 'Unknown Bulk'),
             category,
             description,
             price,

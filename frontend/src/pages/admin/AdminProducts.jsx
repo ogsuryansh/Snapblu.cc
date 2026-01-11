@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
-import { Trash2, Plus, CreditCard, DollarSign, User, MapPin } from 'lucide-react';
+import { Trash2, Plus, CreditCard, DollarSign, User, MapPin, Package, Layers } from 'lucide-react';
 import API_URL from '../../config/api';
 
 const AdminProducts = () => {
@@ -138,24 +138,42 @@ const AdminProducts = () => {
                                         <td className="px-6 py-4">
                                             <div className="flex items-center gap-3">
                                                 <div className="bg-slate-700 p-2 rounded">
-                                                    <CreditCard size={16} className="text-blue-400" />
+                                                    {p.type === 'card' ? <CreditCard size={16} className="text-blue-400" /> : <Package size={16} className="text-purple-400" />}
                                                 </div>
                                                 <div>
-                                                    <div className="font-mono text-white font-medium">{p.cardNumber}</div>
-                                                    <div className="text-xs text-slate-500">{p.brand} • {p.type}</div>
+                                                    <div className="font-mono text-white font-medium">
+                                                        {p.type === 'card' ? p.cardNumber : (p.name || 'Untitled')}
+                                                    </div>
+                                                    <div className="text-xs text-slate-500 uppercase">
+                                                        {p.type} {p.brand ? `• ${p.brand}` : p.category ? `• ${p.category}` : ''}
+                                                    </div>
                                                 </div>
                                             </div>
                                         </td>
                                         <td className="px-6 py-4">
                                             <div className="text-xs">
-                                                <div className="text-slate-300"><span className="text-slate-500">Exp:</span> {p.exp || '--'}</div>
-                                                <div className="text-slate-300"><span className="text-slate-500">CVV:</span> {p.cvv || '---'}</div>
+                                                {p.type === 'card' ? (
+                                                    <>
+                                                        <div className="text-slate-300"><span className="text-slate-500">Exp:</span> {p.exp || '--'}</div>
+                                                        <div className="text-slate-300"><span className="text-slate-500">CVV:</span> {p.cvv || '---'}</div>
+                                                    </>
+                                                ) : (
+                                                    <div className="text-slate-500 italic max-w-[150px] truncate">
+                                                        {p.description || 'No description'}
+                                                    </div>
+                                                )}
                                             </div>
                                         </td>
                                         <td className="px-6 py-4">
                                             <div className="text-xs">
-                                                <div>{p.city !== 'unknown' ? p.city : '-'}, {p.state !== 'unknown' ? p.state : '-'}</div>
-                                                <div className="text-slate-500">{p.zip !== 'unknown' ? p.zip : ''} {p.country}</div>
+                                                {p.type === 'card' ? (
+                                                    <>
+                                                        <div>{p.city !== 'unknown' && p.city !== 'UNKNOWN' ? p.city : '-'}, {p.state !== 'unknown' && p.state !== 'UNKNOWN' ? p.state : '-'}</div>
+                                                        <div className="text-slate-500">{p.zip !== 'unknown' && p.zip !== 'UNKNOWN' ? p.zip : ''} {p.country}</div>
+                                                    </>
+                                                ) : (
+                                                    <span className="text-slate-500">Global / Digital</span>
+                                                )}
                                             </div>
                                         </td>
                                         <td className="px-6 py-4">
@@ -347,7 +365,7 @@ const AdminProducts = () => {
                                     {/* Bulk Details */}
                                     <div className="space-y-4">
                                         <h3 className="text-xs font-bold text-blue-400 uppercase tracking-widest mb-2 flex items-center gap-2">
-                                            <Package size={14} /> Bulk Cards Lot
+                                            <Layers size={14} /> Bulk Cards Lot
                                         </h3>
                                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                             <div className="col-span-2">
