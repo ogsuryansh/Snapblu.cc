@@ -17,7 +17,8 @@ import {
     Key,
     MoreVertical,
     LogOut,
-    Activity // Added
+    Activity,
+    Plus
 } from 'lucide-react';
 import { useState, useRef, useEffect } from 'react';
 
@@ -159,6 +160,17 @@ const Sidebar = () => {
                         Welcome back 👋
                     </p>
                 </div>
+
+                {/* Topup Button CTA */}
+                <Link
+                    to="/deposit"
+                    className="flex items-center justify-center gap-2 w-full py-2.5 mb-8 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white rounded-xl shadow-lg shadow-blue-900/20 transition-all transform hover:-translate-y-0.5 active:scale-95 group"
+                >
+                    <div className="bg-white/20 p-1 rounded-lg group-hover:rotate-90 transition-transform">
+                        <Plus size={14} />
+                    </div>
+                    <span className="text-xs font-black uppercase tracking-widest">Top Up</span>
+                </Link>
 
                 {/* Navigation */}
                 <nav className="space-y-6">
