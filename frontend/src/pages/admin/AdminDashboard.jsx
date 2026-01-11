@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { Users, DollarSign, Package, ShoppingCart, TrendingUp, CreditCard } from 'lucide-react';
 import API_URL from '../../config/api';
