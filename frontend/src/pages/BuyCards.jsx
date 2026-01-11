@@ -41,10 +41,11 @@ const BuyCards = () => {
             const config = { headers: { Authorization: `Bearer ${userInfo.token}` } };
             const { data } = await axios.get(`${API_URL}/api/products?type=card&limit=100&page=${pageNum}`, config);
 
+            const newProducts = data.products || [];
             if (pageNum === 1) {
-                setProducts(data.products);
+                setProducts(newProducts);
             } else {
-                setProducts(prev => [...prev, ...data.products]);
+                setProducts(prev => [...(Array.isArray(prev) ? prev : []), ...newProducts]);
             }
 
             setHasMore(data.page < data.pages);
@@ -124,7 +125,7 @@ const BuyCards = () => {
         alert('Copied to clipboard!');
     };
 
-    const filteredData = products.filter(card => {
+    const filteredData = (Array.isArray(products) ? products : []).filter(card => {
         const matchesSearch =
             (card.bin && card.bin.includes(searchQuery)) ||
             (card.brand && card.brand.toLowerCase().includes(searchQuery.toLowerCase())) ||

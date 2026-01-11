@@ -20,7 +20,7 @@ const BulkCards = () => {
             const userInfo = JSON.parse(localStorage.getItem('userInfo'));
             const config = { headers: { Authorization: `Bearer ${userInfo.token}` } };
             const { data } = await axios.get(`${API_URL}/api/products?type=bulk&limit=100`, config);
-            setLots(data.products);
+            setLots(data.products || []);
             setLoading(false);
         } catch (error) {
             console.error('Error fetching bulk lots:', error);
@@ -69,7 +69,7 @@ const BulkCards = () => {
                     <Loader2 size={48} className="animate-spin text-blue-500 mb-4" />
                     <p className="text-gray-400 font-medium tracking-widest uppercase">Fetching Bulk Inventory...</p>
                 </div>
-            ) : lots.length === 0 ? (
+            ) : (!lots || lots.length === 0) ? (
                 <div className="card p-20 text-center border-dashed border-gray-700 bg-transparent">
                     <Package size={64} className="mx-auto text-gray-700 mb-4" />
                     <h3 className="text-xl font-bold text-gray-500 mb-2">No Bulk Lots Available</h3>
@@ -77,7 +77,7 @@ const BulkCards = () => {
                 </div>
             ) : (
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    {lots.map((lot) => (
+                    {Array.isArray(lots) && lots.map((lot) => (
                         <div key={lot._id} className="card p-0 overflow-hidden border-orange-500/10 hover:border-orange-500/30 group transition-all">
                             <div className="flex h-full">
                                 <div className="hidden sm:flex w-32 bg-slate-800/80 items-center justify-center border-r border-slate-700">

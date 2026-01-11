@@ -34,7 +34,7 @@ const AdminProducts = () => {
             const adminInfo = JSON.parse(localStorage.getItem('adminInfo'));
             const config = { headers: { Authorization: `Bearer ${adminInfo.token}` } };
             const { data } = await axios.get(`${API_URL}/api/products?limit=10000`, config);
-            setProducts(data.products);
+            setProducts(data.products || []);
             setLoading(false);
         } catch (error) {
             console.error(error);
@@ -133,7 +133,7 @@ const AdminProducts = () => {
                                 </tr>
                             </thead>
                             <tbody className="divide-y divide-slate-700">
-                                {products.map((p) => (
+                                {Array.isArray(products) && products.map((p) => (
                                     <tr key={p._id} className="hover:bg-slate-700/50 transition-colors">
                                         <td className="px-6 py-4">
                                             <div className="flex items-center gap-3">
@@ -192,7 +192,7 @@ const AdminProducts = () => {
                                         </td>
                                     </tr>
                                 ))}
-                                {products.length === 0 && (
+                                {(!products || products.length === 0) && (
                                     <tr>
                                         <td colSpan="5" className="px-6 py-12 text-center text-slate-500">
                                             <div className="flex flex-col items-center gap-3">

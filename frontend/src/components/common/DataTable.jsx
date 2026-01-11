@@ -1,7 +1,8 @@
 import { useState } from 'react';
 import { ChevronDown, ChevronUp, ChevronsUpDown } from 'lucide-react';
 
-const DataTable = ({ columns, data, selectable = false, onSelectionChange }) => {
+const DataTable = ({ columns, data: rawData = [], selectable = false, onSelectionChange }) => {
+    const data = Array.isArray(rawData) ? rawData : [];
     const [selectedRows, setSelectedRows] = useState(new Set());
     const [sortConfig, setSortConfig] = useState({ key: null, direction: 'asc' });
 

@@ -24,7 +24,7 @@ const BuyLogs = () => {
             const userInfo = JSON.parse(localStorage.getItem('userInfo'));
             const config = { headers: { Authorization: `Bearer ${userInfo.token}` } };
             const { data } = await axios.get(`${API_URL}/api/products?type=log&limit=100`, config);
-            setProducts(data.products);
+            setProducts(data.products || []);
             setLoading(false);
         } catch (error) {
             console.error('Error fetching logs:', error);
@@ -51,9 +51,10 @@ const BuyLogs = () => {
         }
     };
 
-    const categories = ['all', ...new Set(products.map(p => p.category).filter(Boolean))];
+    const categories = ['all', ...new Set((products || []).map(p => p.category).filter(Boolean))];
+    const productsArray = Array.isArray(products) ? products : [];
 
-    const filteredProducts = products.filter((product) => {
+    const filteredProducts = productsArray.filter((product) => {
         const matchesSearch = product.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
             (product.category && product.category.toLowerCase().includes(searchQuery.toLowerCase()));
         const matchesCategory = selectedCategory === 'all' || product.category === selectedCategory;
