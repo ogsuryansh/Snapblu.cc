@@ -15,7 +15,7 @@ const MyBulkPurchases = () => {
 
     const fetchLots = async () => {
         try {
-            const userInfo = JSON.parse(localStorage.getItem('userInfo'));
+            const userInfo = JSON.parse(sessionStorage.getItem('userInfo'));
             const config = { headers: { Authorization: `Bearer ${userInfo.token}` } };
             const { data } = await axios.get(`${API_URL}/api/orders/myorders`, config);
             setLots(data.filter(p => p.type === 'bulk'));

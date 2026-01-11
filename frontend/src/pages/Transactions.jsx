@@ -10,7 +10,7 @@ const Transactions = () => {
     useEffect(() => {
         const fetchTransactions = async () => {
             try {
-                const userInfo = JSON.parse(localStorage.getItem('userInfo'));
+                const userInfo = JSON.parse(sessionStorage.getItem('userInfo'));
                 const config = { headers: { Authorization: `Bearer ${userInfo.token}` } };
                 const { data } = await axios.get(`${API_URL}/api/transactions`, config);
                 setTransactions(data);

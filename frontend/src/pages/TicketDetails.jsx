@@ -24,7 +24,7 @@ const TicketDetails = () => {
 
     const fetchTicket = async () => {
         try {
-            const userInfo = JSON.parse(localStorage.getItem('userInfo'));
+            const userInfo = JSON.parse(sessionStorage.getItem('userInfo'));
             const config = { headers: { Authorization: `Bearer ${userInfo.token}` } };
             const { data } = await axios.get(`${API_URL}/api/tickets/${id}`, config);
             setTicket(data);
@@ -41,7 +41,7 @@ const TicketDetails = () => {
 
         setReplying(true);
         try {
-            const userInfo = JSON.parse(localStorage.getItem('userInfo'));
+            const userInfo = JSON.parse(sessionStorage.getItem('userInfo'));
             const config = { headers: { Authorization: `Bearer ${userInfo.token}` } };
 
             const { data } = await axios.post(`${API_URL}/api/tickets/${id}/reply`, {

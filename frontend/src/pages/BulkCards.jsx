@@ -17,7 +17,7 @@ const BulkCards = () => {
 
     const fetchBulkLots = async () => {
         try {
-            const userInfo = JSON.parse(localStorage.getItem('userInfo'));
+            const userInfo = JSON.parse(sessionStorage.getItem('userInfo'));
             const config = { headers: { Authorization: `Bearer ${userInfo.token}` } };
             const { data } = await axios.get(`${API_URL}/api/products?type=bulk&limit=100`, config);
             setLots(data.products || []);
@@ -33,7 +33,7 @@ const BulkCards = () => {
 
         setPurchasing(lotId);
         try {
-            const userInfo = JSON.parse(localStorage.getItem('userInfo'));
+            const userInfo = JSON.parse(sessionStorage.getItem('userInfo'));
             const config = { headers: { Authorization: `Bearer ${userInfo.token}` } };
 
             await axios.post(`${API_URL}/api/orders/purchase/${lotId}`, {}, config);

@@ -33,7 +33,8 @@ const Login = () => {
             );
 
             // Save user info and token to localStorage
-            localStorage.setItem('userInfo', JSON.stringify(data));
+            // Save user info and token to sessionStorage (not persistent)
+            sessionStorage.setItem('userInfo', JSON.stringify(data));
 
             // Redirect to dashboard
             setLoading(false);

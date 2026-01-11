@@ -57,7 +57,8 @@ const Register = () => {
             );
 
             // AUTO LOGIN: Save user info and token to localStorage
-            localStorage.setItem('userInfo', JSON.stringify(data));
+            // AUTO LOGIN: Save user info and token to sessionStorage
+            sessionStorage.setItem('userInfo', JSON.stringify(data));
 
             setLoading(false);
             navigate('/dashboard'); // Go straight to dashboard

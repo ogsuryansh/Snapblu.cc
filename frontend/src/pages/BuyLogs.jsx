@@ -21,7 +21,7 @@ const BuyLogs = () => {
 
     const fetchLogs = async () => {
         try {
-            const userInfo = JSON.parse(localStorage.getItem('userInfo'));
+            const userInfo = JSON.parse(sessionStorage.getItem('userInfo'));
             const config = { headers: { Authorization: `Bearer ${userInfo.token}` } };
             const { data } = await axios.get(`${API_URL}/api/products?type=log&limit=100`, config);
             setProducts(data.products || []);
@@ -37,7 +37,7 @@ const BuyLogs = () => {
 
         setPurchasing(productId);
         try {
-            const userInfo = JSON.parse(localStorage.getItem('userInfo'));
+            const userInfo = JSON.parse(sessionStorage.getItem('userInfo'));
             const config = { headers: { Authorization: `Bearer ${userInfo.token}` } };
 
             const { data } = await axios.post(`${API_URL}/api/orders/purchase/${productId}`, {}, config);

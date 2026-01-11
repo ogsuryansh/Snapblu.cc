@@ -23,7 +23,7 @@ const Checkers = () => {
         setLoading(true);
         setBinResult(null);
         try {
-            const userInfo = JSON.parse(localStorage.getItem('userInfo'));
+            const userInfo = JSON.parse(sessionStorage.getItem('userInfo'));
             const config = { headers: { Authorization: `Bearer ${userInfo.token}` } };
             const { data } = await axios.post(`${API_URL}/api/products/check-bin`, { bin: binValue }, config);
             setBinResult(data);
@@ -41,7 +41,7 @@ const Checkers = () => {
         setLoading(true);
         setCardResult(null);
         try {
-            const userInfo = JSON.parse(localStorage.getItem('userInfo'));
+            const userInfo = JSON.parse(sessionStorage.getItem('userInfo'));
             const config = { headers: { Authorization: `Bearer ${userInfo.token}` } };
             const { data } = await axios.post(`${API_URL}/api/products/check-card`, { data: cardData }, config);
             setCardResult(data);

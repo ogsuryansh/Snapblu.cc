@@ -68,7 +68,7 @@ const Deposit = () => {
         setLoading(true);
 
         try {
-            const userInfo = JSON.parse(localStorage.getItem('userInfo'));
+            const userInfo = JSON.parse(sessionStorage.getItem('userInfo'));
             const config = { headers: { Authorization: `Bearer ${userInfo.token}` } };
 
             await axios.post(`${API_URL}/api/deposits`, {

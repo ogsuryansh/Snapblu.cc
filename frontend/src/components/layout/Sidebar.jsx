@@ -42,7 +42,7 @@ const Sidebar = ({ onClose }) => {
     const navigate = useNavigate();
 
     // Get user info
-    const userInfo = JSON.parse(localStorage.getItem('userInfo')) || {
+    const userInfo = JSON.parse(sessionStorage.getItem('userInfo')) || {
         username: 'Guest',
         email: 'guest@example.com'
     };
@@ -53,7 +53,7 @@ const Sidebar = ({ onClose }) => {
         : 'GU';
 
     const handleLogout = () => {
-        localStorage.removeItem('userInfo');
+        sessionStorage.removeItem('userInfo');
         navigate('/login');
     };
 

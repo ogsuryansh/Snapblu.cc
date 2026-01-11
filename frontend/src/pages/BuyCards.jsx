@@ -37,7 +37,7 @@ const BuyCards = () => {
         else setLoadingMore(true);
 
         try {
-            const userInfo = JSON.parse(localStorage.getItem('userInfo'));
+            const userInfo = JSON.parse(sessionStorage.getItem('userInfo'));
             const config = { headers: { Authorization: `Bearer ${userInfo.token}` } };
             const { data } = await axios.get(`${API_URL}/api/products?type=card&limit=100&page=${pageNum}`, config);
 
@@ -75,7 +75,7 @@ const BuyCards = () => {
         setPurchasing(true);
         setConfirmPurchase(null);
         try {
-            const userInfo = JSON.parse(localStorage.getItem('userInfo'));
+            const userInfo = JSON.parse(sessionStorage.getItem('userInfo'));
             const config = { headers: { Authorization: `Bearer ${userInfo.token}` } };
 
             if (items.length === 1) {
@@ -105,7 +105,7 @@ const BuyCards = () => {
     const handleCheck = async (productId) => {
         setCheckingId(productId);
         try {
-            const userInfo = JSON.parse(localStorage.getItem('userInfo'));
+            const userInfo = JSON.parse(sessionStorage.getItem('userInfo'));
             const config = { headers: { Authorization: `Bearer ${userInfo.token}` } };
             const { data } = await axios.post(`${API_URL}/api/products/check-card`, { id: productId }, config);
 

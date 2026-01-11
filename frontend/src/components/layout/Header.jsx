@@ -7,7 +7,7 @@ import API_URL from '../../config/api';
 
 const Header = ({ onMenuToggle }) => {
     const { isDark, toggleTheme } = useTheme();
-    const userInfo = JSON.parse(localStorage.getItem('userInfo')) || {};
+    const userInfo = JSON.parse(sessionStorage.getItem('userInfo')) || {};
     const [balance, setBalance] = useState(userInfo.balance || 0.00);
 
     // Fetch fresh balance on mount and every 10 seconds
@@ -24,9 +24,9 @@ const Header = ({ onMenuToggle }) => {
                 const { data } = await axios.get(`${API_URL}/api/users/me`, config);
                 setBalance(data.balance || 0);
 
-                // Update localStorage
+                // Update sessionStorage
                 userInfo.balance = data.balance;
-                localStorage.setItem('userInfo', JSON.stringify(userInfo));
+                sessionStorage.setItem('userInfo', JSON.stringify(userInfo));
             } catch (error) {
                 console.error('Failed to fetch balance:', error);
             }
