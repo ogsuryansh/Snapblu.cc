@@ -22,8 +22,13 @@ import {
 } from 'lucide-react';
 import { useState, useRef, useEffect } from 'react';
 
-const Sidebar = () => {
+const Sidebar = ({ onClose }) => {
     const location = useLocation();
+
+    // Auto-close sidebar on route change (Mobile)
+    useEffect(() => {
+        if (onClose) onClose();
+    }, [location.pathname]);
     const [openMenus, setOpenMenus] = useState({
         shop: true,
         orders: true,
@@ -164,6 +169,7 @@ const Sidebar = () => {
                 {/* Topup Button CTA */}
                 <Link
                     to="/deposit"
+                    onClick={onClose}
                     className="flex items-center justify-center gap-2 w-full py-2.5 mb-8 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white rounded-xl shadow-lg shadow-blue-900/20 transition-all transform hover:-translate-y-0.5 active:scale-95 group"
                 >
                     <div className="bg-white/20 p-1 rounded-lg group-hover:rotate-90 transition-transform">
@@ -198,6 +204,7 @@ const Sidebar = () => {
                                                 <Link
                                                     key={item.path}
                                                     to={item.path}
+                                                    onClick={onClose}
                                                     className={`sidebar-link ${isActive(item.path) ? 'active' : ''
                                                         }`}
                                                 >
@@ -218,6 +225,7 @@ const Sidebar = () => {
                                             <Link
                                                 key={item.path}
                                                 to={item.path}
+                                                onClick={onClose}
                                                 className={`sidebar-link ${isActive(item.path) ? 'active' : ''
                                                     }`}
                                             >
