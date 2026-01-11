@@ -19,8 +19,8 @@ const BulkCards = () => {
         try {
             const userInfo = JSON.parse(localStorage.getItem('userInfo'));
             const config = { headers: { Authorization: `Bearer ${userInfo.token}` } };
-            const { data } = await axios.get(`${API_URL}/api/products`, config);
-            setLots(data.filter(p => p.type === 'bulk'));
+            const { data } = await axios.get(`${API_URL}/api/products?type=bulk&limit=100`, config);
+            setLots(data.products);
             setLoading(false);
         } catch (error) {
             console.error('Error fetching bulk lots:', error);

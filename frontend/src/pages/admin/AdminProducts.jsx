@@ -33,8 +33,8 @@ const AdminProducts = () => {
         try {
             const adminInfo = JSON.parse(localStorage.getItem('adminInfo'));
             const config = { headers: { Authorization: `Bearer ${adminInfo.token}` } };
-            const { data } = await axios.get(`${API_URL}/api/products`, config);
-            setProducts(data);
+            const { data } = await axios.get(`${API_URL}/api/products?limit=10000`, config);
+            setProducts(data.products);
             setLoading(false);
         } catch (error) {
             console.error(error);

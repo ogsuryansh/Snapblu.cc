@@ -7,13 +7,26 @@ import axios from 'axios';
 // @access  Private
 const getProducts = asyncHandler(async (req, res) => {
     let products;
-    if (req.user && req.user.isAdmin) {
-        // Admin sees EVERYTHING
-        products = await Product.find({}).sort({ createdAt: -1 });
-    } else {
-        // Users see only UNSOLD products
-        products = await Product.find({ isSold: false }).sort({ createdAt: -1 });
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 10000; // Large default for backward compatibility
+    const skip = (page - 1) * limit;
+
+    let query = {};
+    if (!(req.user && req.user.isAdmin)) {
+        query.isSold = false;
     }
+
+    // Filter by type if provided
+    if (req.query.type) {
+        query.type = req.query.type;
+    }
+
+    const total = await Product.countDocuments(query);
+
+    products = await Product.find(query)
+        .sort({ createdAt: -1 })
+        .skip(skip)
+        .limit(limit);
 
     const sanitizedProducts = products.map(p => {
         if (req.user && req.user.isAdmin) return p;
@@ -38,7 +51,12 @@ const getProducts = asyncHandler(async (req, res) => {
         return pObj;
     });
 
-    res.json(sanitizedProducts);
+    res.json({
+        products: sanitizedProducts,
+        page,
+        pages: Math.ceil(total / limit),
+        total
+    });
 });
 
 // @desc    Add a product

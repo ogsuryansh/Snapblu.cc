@@ -130,4 +130,70 @@ const refundProduct = asyncHandler(async (req, res) => {
     res.json({ success: true, message: 'Refund processed successfully' });
 });
 
-export { purchaseProduct, getMyOrders, getAllOrders, refundProduct };
+// @desc    Purchase multiple products in bulk
+// @route   POST /api/orders/purchase-batch
+// @access  Private
+const purchaseBatch = asyncHandler(async (req, res) => {
+    const { productIds } = req.body;
+    const user = await User.findById(req.user._id);
+
+    if (!productIds || !Array.isArray(productIds) || productIds.length === 0) {
+        res.status(400);
+        throw new Error('No products selected');
+    }
+
+    const products = await Product.find({ _id: { $in: productIds } });
+
+    if (products.length !== productIds.length) {
+        res.status(404);
+        throw new Error('Some products were not found');
+    }
+
+    const alreadySold = products.find(p => p.isSold);
+    if (alreadySold) {
+        res.status(400);
+        throw new Error(`Product ${alreadySold.bin || alreadySold.name} is already sold`);
+    }
+
+    const totalCost = products.reduce((sum, p) => sum + p.price, 0);
+
+    if (user.balance < totalCost) {
+        res.status(400);
+        throw new Error('Insufficient balance for bulk purchase');
+    }
+
+    // 1. Deduct Balance
+    user.balance -= totalCost;
+    await user.save();
+
+    // 2. Mark Products as Sold & Create Transactions
+    const purchasedProducts = [];
+    for (const product of products) {
+        product.isSold = true;
+        product.soldTo = user._id;
+        product.soldAt = Date.now();
+        await product.save();
+
+        const description = product.type === 'card'
+            ? `Purchased Card ${product.bin} - ${product.brand} (Bulk)`
+            : `Purchased Log: ${product.name} (Bulk)`;
+
+        await Transaction.create({
+            user: user._id,
+            type: 'purchase',
+            amount: product.price,
+            description: description,
+            status: 'completed'
+        });
+
+        purchasedProducts.push(product);
+    }
+
+    res.json({
+        success: true,
+        message: `${products.length} products purchased successfully!`,
+        products: purchasedProducts
+    });
+});
+
+export { purchaseProduct, purchaseBatch, getMyOrders, getAllOrders, refundProduct };

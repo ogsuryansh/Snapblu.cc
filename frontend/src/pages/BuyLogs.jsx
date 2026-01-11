@@ -23,9 +23,8 @@ const BuyLogs = () => {
         try {
             const userInfo = JSON.parse(localStorage.getItem('userInfo'));
             const config = { headers: { Authorization: `Bearer ${userInfo.token}` } };
-            const { data } = await axios.get(`${API_URL}/api/products`, config);
-            // Filter for only unsold logs
-            setProducts(data.filter(p => p.type === 'log'));
+            const { data } = await axios.get(`${API_URL}/api/products?type=log&limit=100`, config);
+            setProducts(data.products);
             setLoading(false);
         } catch (error) {
             console.error('Error fetching logs:', error);
