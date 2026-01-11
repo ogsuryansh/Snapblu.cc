@@ -64,18 +64,18 @@ const Login = () => {
                 <div className="max-w-md w-full mx-auto space-y-8">
                     {/* Logo Mobile */}
                     <div className="flex items-center gap-3 lg:hidden mb-8 group cursor-pointer">
-                        <div className="w-10 h-10 bg-gradient-to-br from-blue-600 to-indigo-700 rounded-xl flex items-center justify-center shadow-lg shadow-blue-500/20 group-hover:rotate-12 transition-transform">
-                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" className="text-white"><path d="m13 2-2 10h9L7 22l2-10H1L13 2z" fill="currentColor" /></svg>
+                        <div className="w-10 h-10 bg-blue-600 rounded-xl flex items-center justify-center shadow-lg shadow-blue-500/20 group-hover:rotate-12 transition-transform">
+                            <ShoppingBag size={24} className="text-white" />
                         </div>
-                        <span className="text-2xl font-black tracking-tighter text-white">ZENITH</span>
+                        <span className="text-2xl font-black tracking-tighter text-white uppercase">Snap Blu CC</span>
                     </div>
 
                     {/* Logo Desktop */}
                     <div className="hidden lg:flex absolute top-8 left-8 items-center gap-3 font-bold group cursor-pointer">
-                        <div className="w-9 h-9 bg-gradient-to-br from-blue-600 to-indigo-700 rounded-xl flex items-center justify-center shadow-lg shadow-blue-500/20 group-hover:rotate-12 transition-transform">
-                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" className="text-white"><path d="m13 2-2 10h9L7 22l2-10H1L13 2z" fill="currentColor" /></svg>
+                        <div className="w-9 h-9 bg-blue-600 rounded-xl flex items-center justify-center shadow-lg shadow-blue-500/20 group-hover:rotate-12 transition-transform">
+                            <ShoppingBag size={20} className="text-white" />
                         </div>
-                        <span className="text-xl font-black tracking-tighter text-white">ZENITH</span>
+                        <span className="text-xl font-black tracking-tighter text-white uppercase">Snap Blu CC</span>
                     </div>
 
                     <div className="space-y-2">

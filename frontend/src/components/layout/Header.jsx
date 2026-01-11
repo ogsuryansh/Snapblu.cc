@@ -49,7 +49,7 @@ const Header = ({ onMenuToggle }) => {
                     >
                         <Menu size={20} />
                     </button>
-                    <span className="font-black tracking-tighter text-xl text-gray-900 dark:text-white">ZENITH</span>
+                    <span className="font-black tracking-tighter text-xl text-gray-900 dark:text-white uppercase">Snap Blu CC</span>
                 </div>
 
                 {/* Spacer for desktop */}

@@ -151,15 +151,13 @@ const Sidebar = ({ onClose }) => {
     return (
         <aside className="w-64 bg-white dark:bg-dark-bg border-r border-gray-200 dark:border-dark-border h-screen sticky top-0 flex flex-col transition-colors z-30">
             <div className="flex-1 overflow-y-auto p-6 scrollbar-none">
-                {/* Brand Logo - ZENITH */}
+                {/* Brand Logo - Snap Blu CC */}
                 <div className="mb-8 flex items-center gap-3">
-                    <div className="w-9 h-9 bg-gradient-to-br from-blue-600 to-indigo-700 rounded-xl flex items-center justify-center shadow-lg shadow-blue-500/20">
-                        <div className="text-white">
-                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="m13 2-2 10h9L7 22l2-10H1L13 2z" fill="currentColor" /></svg>
-                        </div>
+                    <div className="w-9 h-9 bg-blue-600 rounded-xl flex items-center justify-center shadow-lg shadow-blue-500/20">
+                        <ShoppingBag size={20} className="text-white" />
                     </div>
-                    <h1 className="text-xl font-extrabold tracking-tighter text-gray-900 dark:text-white">
-                        ZENITH
+                    <h1 className="text-xl font-extrabold tracking-tighter text-gray-900 dark:text-white uppercase">
+                        Snap Blu CC
                     </h1>
                 </div>
 

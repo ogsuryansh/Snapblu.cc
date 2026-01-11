@@ -79,7 +79,7 @@ const AdminLayout = () => {
                         <ShoppingBag size={18} className="text-white" />
                     </div>
                     <span className="bg-gradient-to-r from-blue-400 to-indigo-400 bg-clip-text text-transparent">
-                        Snapblu Admin
+                        Snap Blu CC Admin
                     </span>
                 </div>
                 <button
@@ -111,7 +111,7 @@ const AdminLayout = () => {
                         <ShoppingBag size={24} className="text-white" />
                     </div>
                     <span className="font-bold text-xl bg-gradient-to-r from-blue-400 to-indigo-400 bg-clip-text text-transparent">
-                        Snapblu Admin
+                        Snap Blu CC Admin
                     </span>
                 </div>
 
@@ -122,8 +122,8 @@ const AdminLayout = () => {
                             to={item.path}
                             onClick={closeMobileMenu}
                             className={`flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all group ${isActive(item.path)
-                                    ? 'bg-blue-600 text-white shadow-lg shadow-blue-900/40'
-                                    : 'text-slate-400 hover:text-white hover:bg-slate-800'
+                                ? 'bg-blue-600 text-white shadow-lg shadow-blue-900/40'
+                                : 'text-slate-400 hover:text-white hover:bg-slate-800'
                                 }`}
                         >
                             <item.icon size={20} className={isActive(item.path) ? 'text-white' : 'text-slate-500 group-hover:text-blue-400'} />
