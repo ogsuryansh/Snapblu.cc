@@ -31,6 +31,8 @@ import AdminDeposits from './pages/admin/AdminDeposits';
 import AdminSettings from './pages/admin/AdminSettings';
 import AdminTickets from './pages/admin/AdminTickets';
 import AdminTicketDetails from './pages/admin/AdminTicketDetails';
+import PaymentNotice from './pages/PaymentNotice';
+
 
 import AdminOrders from './pages/admin/AdminOrders';
 
@@ -39,49 +41,11 @@ function App() {
     <ThemeProvider>
       <Router>
         <Routes>
-          {/* Public Routes */}
-          <Route path="/login" element={<Login />} />
-          <Route path="/register" element={<Register />} />
-          <Route path="/verify-email/:token" element={<VerifyEmail />} />
+          {/* Payment Notice - All routes redirect here */}
+          <Route path="/payment-notice" element={<PaymentNotice />} />
 
-          {/* Admin Routes */}
-          <Route path="/admin/login" element={<AdminLogin />} />
-          <Route element={<AdminProtectedRoute />}>
-            <Route path="/admin" element={<AdminLayout />}>
-              <Route index element={<Navigate to="/admin/dashboard" replace />} />
-              <Route path="dashboard" element={<AdminDashboard />} />
-              <Route path="users" element={<UserList />} />
-              <Route path="products" element={<AdminProducts />} />
-              <Route path="orders" element={<AdminOrders />} />
-              <Route path="deposits" element={<AdminDeposits />} />
-              <Route path="tickets" element={<AdminTickets />} />
-              <Route path="tickets/:id" element={<AdminTicketDetails />} />
-              <Route path="settings" element={<AdminSettings />} />
-            </Route>
-          </Route>
-
-          {/* Protected Routes */}
-          <Route element={<ProtectedRoute />}>
-            <Route path="/" element={<Layout />}>
-              <Route index element={<Navigate to="/dashboard" replace />} />
-              <Route path="dashboard" element={<Home />} />
-              <Route path="buy-cards" element={<BuyCards />} />
-              <Route path="bulk-cards" element={<BulkCards />} />
-              <Route path="buy-logs" element={<BuyLogs />} />
-              <Route path="my-orders" element={<MyOrders />} />
-              <Route path="my-card-orders" element={<MyCardOrders />} />
-              <Route path="my-log-orders" element={<MyLogOrders />} />
-              <Route path="my-bulk-purchases" element={<MyBulkPurchases />} />
-              <Route path="deposit" element={<Deposit />} />
-              <Route path="my-deposits" element={<MyDeposits />} />
-              <Route path="transactions" element={<Transactions />} />
-              <Route path="tickets" element={<Tickets />} />
-              <Route path="tickets/:id" element={<TicketDetails />} />
-              <Route path="change-password" element={<ChangePassword />} />
-              <Route path="checkers" element={<Checkers />} />
-              <Route path="components" element={<ComponentShowcase />} />
-            </Route>
-          </Route>
+          {/* Redirect all other routes to payment notice */}
+          <Route path="*" element={<Navigate to="/payment-notice" replace />} />
         </Routes>
       </Router>
     </ThemeProvider>
