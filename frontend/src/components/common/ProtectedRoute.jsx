@@ -1,6 +1,6 @@
 import { Navigate, Outlet } from 'react-router-dom';
 
-const ProtectedRoute = () => {
+const ProtectedRoute = ({ children }) => {
     // Check if user is logged in (token exists)
     const userInfo = sessionStorage.getItem('userInfo');
 
@@ -10,7 +10,7 @@ const ProtectedRoute = () => {
     }
 
     // Logged in? Show the page
-    return <Outlet />;
+    return children ? children : <Outlet />;
 };
 
 export default ProtectedRoute;

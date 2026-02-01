@@ -38,7 +38,7 @@ const Home = () => {
     const fetchDashboardData = async () => {
         setLoading(true);
         try {
-            const userInfo = JSON.parse(localStorage.getItem('userInfo'));
+            const userInfo = JSON.parse(sessionStorage.getItem('userInfo'));
             const config = { headers: { Authorization: `Bearer ${userInfo.token}` } };
 
             // Fetch user profile for balance

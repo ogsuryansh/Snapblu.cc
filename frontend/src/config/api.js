@@ -11,6 +11,8 @@ axios.interceptors.response.use(
             // Clear both user and admin info
             localStorage.removeItem('userInfo');
             localStorage.removeItem('adminInfo');
+            sessionStorage.removeItem('userInfo');
+            sessionStorage.removeItem('adminInfo');
 
             // Redirect to login if not already there
             if (!window.location.pathname.includes('/login')) {
