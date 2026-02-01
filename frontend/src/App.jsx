@@ -31,9 +31,6 @@ import AdminDeposits from './pages/admin/AdminDeposits';
 import AdminSettings from './pages/admin/AdminSettings';
 import AdminTickets from './pages/admin/AdminTickets';
 import AdminTicketDetails from './pages/admin/AdminTicketDetails';
-import PaymentNotice from './pages/PaymentNotice';
-
-
 import AdminOrders from './pages/admin/AdminOrders';
 
 function App() {
@@ -41,11 +38,48 @@ function App() {
     <ThemeProvider>
       <Router>
         <Routes>
-          {/* Payment Notice - All routes redirect here */}
-          <Route path="/payment-notice" element={<PaymentNotice />} />
+          {/* Public Routes */}
+          <Route path="/login" element={<Login />} />
+          <Route path="/register" element={<Register />} />
+          <Route path="/verify-email/:token" element={<VerifyEmail />} />
+          <Route path="/admin/login" element={<AdminLogin />} />
 
-          {/* Redirect all other routes to payment notice */}
-          <Route path="*" element={<Navigate to="/payment-notice" replace />} />
+          {/* Protected User Routes */}
+          <Route path="/" element={<ProtectedRoute><Layout /></ProtectedRoute>}>
+            <Route index element={<Navigate to="/dashboard" replace />} />
+            <Route path="dashboard" element={<Home />} />
+            <Route path="buy-cards" element={<BuyCards />} />
+            <Route path="bulk-cards" element={<BulkCards />} />
+            <Route path="buy-logs" element={<BuyLogs />} />
+            <Route path="my-orders" element={<MyOrders />} />
+            <Route path="my-card-orders" element={<MyCardOrders />} />
+            <Route path="my-log-orders" element={<MyLogOrders />} />
+            <Route path="my-bulk-purchases" element={<MyBulkPurchases />} />
+            <Route path="checkers" element={<Checkers />} />
+            <Route path="deposit" element={<Deposit />} />
+            <Route path="my-deposits" element={<MyDeposits />} />
+            <Route path="transactions" element={<Transactions />} />
+            <Route path="tickets" element={<Tickets />} />
+            <Route path="tickets/:id" element={<TicketDetails />} />
+            <Route path="change-password" element={<ChangePassword />} />
+            <Route path="showcase" element={<ComponentShowcase />} />
+          </Route>
+
+          {/* Protected Admin Routes */}
+          <Route path="/admin" element={<AdminProtectedRoute><AdminLayout /></AdminProtectedRoute>}>
+            <Route index element={<Navigate to="/admin/dashboard" replace />} />
+            <Route path="dashboard" element={<AdminDashboard />} />
+            <Route path="users" element={<UserList />} />
+            <Route path="products" element={<AdminProducts />} />
+            <Route path="orders" element={<AdminOrders />} />
+            <Route path="deposits" element={<AdminDeposits />} />
+            <Route path="tickets" element={<AdminTickets />} />
+            <Route path="tickets/:id" element={<AdminTicketDetails />} />
+            <Route path="settings" element={<AdminSettings />} />
+          </Route>
+
+          {/* Redirect unknown routes */}
+          <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </Router>
     </ThemeProvider>
