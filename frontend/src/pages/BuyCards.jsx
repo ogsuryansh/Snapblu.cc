@@ -39,6 +39,7 @@ const BuyCards = () => {
         try {
             const userInfo = JSON.parse(sessionStorage.getItem('userInfo'));
             const config = { headers: { Authorization: `Bearer ${userInfo.token}` } };
+
             const { data } = await axios.get(`${API_URL}/api/products?type=card&limit=100&page=${pageNum}`, config);
 
             const newProducts = data.products || [];
@@ -136,18 +137,45 @@ const BuyCards = () => {
     const columns = [
         {
             key: 'bin', label: 'BIN', sortable: true,
-            render: (row) => <span className="font-mono text-blue-400">{row.bin}</span>
+            render: (row) => (
+                <div className="flex flex-col">
+                    <span className="font-mono text-blue-400 font-bold">{row.bin}</span>
+                    <span className="text-[10px] text-slate-500">{row.type}</span>
+                </div>
+            )
+        },
+        {
+            key: 'country', label: 'Country', sortable: true,
+            render: (row) => (
+                <div className="flex items-center gap-2">
+                    <span className="font-bold text-slate-300">{row.country}</span>
+                    {row.country === 'US' && <span className="text-lg">🇺🇸</span>}
+                </div>
+            )
         },
         {
             key: 'brand', label: 'Brand', sortable: true,
             render: (row) => (
                 <div className="flex items-center gap-2">
                     <span className="font-bold text-gray-700 dark:text-gray-300">{row.brand}</span>
-                    <span className="text-xs text-gray-500 bg-gray-100 dark:bg-dark-hover px-1 rounded">{row.type}</span>
+                    {row.category === 'new' && (
+                        <span className="bg-blue-600 text-white text-[10px] px-1.5 py-0.5 rounded font-bold animate-pulse">NEW</span>
+                    )}
                 </div>
             )
         },
         { key: 'issuer', label: 'Bank', sortable: true },
+        {
+            key: 'batch', label: 'Class',
+            render: (row) => (
+                <span className={`text-[10px] uppercase font-bold px-2 py-1 rounded border ${row.batch === 'refundable'
+                        ? 'bg-purple-500/10 text-purple-400 border-purple-500/20'
+                        : 'bg-slate-700 text-slate-400 border-slate-600'
+                    }`}>
+                    {row.batch || 'NON-REFUNDABLE'}
+                </span>
+            )
+        },
         {
             key: 'status', label: 'Status',
             render: (row) => {
@@ -311,7 +339,7 @@ const BuyCards = () => {
                 )}
             </div>
 
-            {/* Filter Bar (Simplified) */}
+            {/* Filter Bar */}
             <div className="card p-4 mb-6">
                 <SearchBar
                     placeholder="Search BIN, Bank, Brand..."

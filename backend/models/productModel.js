@@ -28,11 +28,19 @@ const productSchema = mongoose.Schema({
     category: { type: String },
     description: { type: String },
 
+    // Batch System
+    batch: {
+        type: String,
+        required: true,
+        enum: ['refundable', 'non-refundable'],
+        default: 'non-refundable'
+    },
+
     // Core details
     price: {
         type: Number,
         required: true,
-        default: 0
+        default: 0.85
     },
     data: {
         type: String,

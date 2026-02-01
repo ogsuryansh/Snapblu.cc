@@ -21,6 +21,16 @@ const getProducts = asyncHandler(async (req, res) => {
         query.type = req.query.type;
     }
 
+    // Filter by batch (refundable/non-refundable)
+    if (req.query.batch) {
+        query.batch = req.query.batch;
+    }
+
+    // Filter by country
+    if (req.query.country) {
+        query.country = req.query.country;
+    }
+
     const total = await Product.countDocuments(query);
 
     products = await Product.find(query)
@@ -83,7 +93,8 @@ const addProduct = asyncHandler(async (req, res) => {
         price,
         data,
         category,
-        description
+        description,
+        batch
     } = req.body;
 
     let product;
@@ -124,6 +135,7 @@ const addProduct = asyncHandler(async (req, res) => {
             level,
             issuer,
             price,
+            batch: batch || 'non-refundable',
             data: fullData
         });
     } else {

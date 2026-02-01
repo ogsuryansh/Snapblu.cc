@@ -26,7 +26,8 @@ const AdminProducts = () => {
         type: 'CREDIT',
         level: 'CLASSIC',
         issuer: '',
-        price: 5
+        price: 0.85,
+        batch: 'non-refundable'
     });
 
     const fetchProducts = async () => {
@@ -93,7 +94,8 @@ const AdminProducts = () => {
             setFormData({
                 cardNumber: '', exp: '', cvv: '', name: '', email: '', phone: '',
                 address: '', city: '', zip: '', state: '', country: 'US',
-                bin: '', brand: 'VISA', type: 'CREDIT', level: 'CLASSIC', issuer: '', price: 5
+                bin: '', brand: 'VISA', type: 'CREDIT', level: 'CLASSIC', issuer: '', price: 0.85,
+                batch: 'non-refundable'
             });
         } catch (error) {
             alert('Error adding product: ' + (error.response?.data?.message || error.message));
@@ -127,6 +129,7 @@ const AdminProducts = () => {
                                 <tr>
                                     <th className="px-6 py-4">Card Info</th>
                                     <th className="px-6 py-4">Details</th>
+                                    <th className="px-6 py-4">Batch</th>
                                     <th className="px-6 py-4">Location</th>
                                     <th className="px-6 py-4">Price</th>
                                     <th className="px-6 py-4 text-right">Action</th>
@@ -165,6 +168,14 @@ const AdminProducts = () => {
                                             </div>
                                         </td>
                                         <td className="px-6 py-4">
+                                            <span className={`text-[10px] uppercase font-bold px-2 py-0.5 rounded border ${p.batch === 'refundable'
+                                                ? 'bg-purple-500/10 text-purple-400 border-purple-500/20'
+                                                : 'bg-slate-700 text-slate-400 border-slate-600'
+                                                }`}>
+                                                {p.batch || 'NON-REFUNDABLE'}
+                                            </span>
+                                        </td>
+                                        <td className="px-6 py-4">
                                             <div className="text-xs">
                                                 {p.type === 'card' ? (
                                                     <>
@@ -194,7 +205,7 @@ const AdminProducts = () => {
                                 ))}
                                 {(!products || products.length === 0) && (
                                     <tr>
-                                        <td colSpan="5" className="px-6 py-12 text-center text-slate-500">
+                                        <td colSpan="6" className="px-6 py-12 text-center text-slate-500">
                                             <div className="flex flex-col items-center gap-3">
                                                 <CreditCard size={48} className="text-slate-700" />
                                                 <p>Inventory is empty.</p>
@@ -286,8 +297,11 @@ const AdminProducts = () => {
                                                     </select>
                                                 </div>
                                                 <div>
-                                                    <label className="text-xs text-slate-400 mb-1 block">Issuer/Bank</label>
-                                                    <input name="issuer" placeholder="Bank of America" className="input-field-admin" value={formData.issuer} onChange={handleChange} />
+                                                    <label className="text-xs text-slate-400 mb-1 block">Batch Type</label>
+                                                    <select name="batch" className="input-field-admin" value={formData.batch} onChange={handleChange}>
+                                                        <option value="non-refundable">Non-Refundable</option>
+                                                        <option value="refundable">Refundable (Premium)</option>
+                                                    </select>
                                                 </div>
                                             </div>
                                         </div>
