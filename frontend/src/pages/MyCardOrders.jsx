@@ -40,7 +40,20 @@ const MyCardOrders = () => {
     const columns = [
         {
             key: 'bin', label: 'BIN',
-            render: (row) => <span className="font-mono text-blue-400">{row.bin}</span>
+            render: (row) => (
+                <div className="flex flex-col">
+                    <span className="font-mono text-blue-400 font-bold">{row.bin}</span>
+                </div>
+            )
+        },
+        {
+            key: 'country', label: 'Country',
+            render: (row) => (
+                <div className="flex items-center gap-2">
+                    <span className="font-bold text-slate-300">{row.country || 'US'}</span>
+                    {(row.country === 'US' || !row.country) && <span className="text-sm">🇺🇸</span>}
+                </div>
+            )
         },
         {
             key: 'details', label: 'Card Details',
@@ -71,7 +84,28 @@ const MyCardOrders = () => {
                 );
             }
         },
-        { key: 'brand', label: 'Brand', render: (row) => <span className="font-bold">{row.brand}</span> },
+        {
+            key: 'brand', label: 'Brand',
+            render: (row) => (
+                <div className="flex items-center gap-2">
+                    <span className="font-bold">{row.brand}</span>
+                    {row.category === 'new' && (
+                        <span className="bg-blue-600 text-white text-[8px] px-1 py-0.5 rounded font-bold">NEW</span>
+                    )}
+                </div>
+            )
+        },
+        {
+            key: 'batch', label: 'Class',
+            render: (row) => (
+                <span className={`text-[10px] uppercase font-bold px-1.5 py-0.5 rounded border ${row.batch === 'refundable'
+                        ? 'bg-purple-500/10 text-purple-400 border-purple-500/20'
+                        : 'bg-slate-700 text-slate-400 border-slate-600'
+                    }`}>
+                    {row.batch || 'NON-REFUNDABLE'}
+                </span>
+            )
+        },
         {
             key: 'price', label: 'Price',
             render: (row) => <span className="text-green-500 font-bold">${row.price}</span>

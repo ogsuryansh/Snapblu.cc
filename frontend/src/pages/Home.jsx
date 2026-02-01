@@ -50,8 +50,10 @@ const Home = () => {
             // Fetch transactions for total spent
             const { data: transactions } = await axios.get(`${API_URL}/api/transactions`, config);
 
-            // Calculate stats
-            const totalSpent = orders.reduce((sum, order) => sum + (order.price || 0), 0);
+            // Calculate stats from transactions for better accuracy
+            const purchaseTxns = transactions.filter(t => t.type === 'purchase' && t.status === 'completed');
+            const totalSpent = purchaseTxns.reduce((sum, t) => sum + (t.amount || 0), 0);
+
             const cardsPurchased = orders.filter(o => o.type === 'card').length;
 
             // Fetch deposits for the deposits tab
@@ -60,7 +62,6 @@ const Home = () => {
             // Calculate deposit stats
             const approvedDeposits = deposits.filter(d => d.status === 'approved').length;
             const pendingDeposits = deposits.filter(d => d.status === 'pending').length;
-            const rejectedDeposits = deposits.filter(d => d.status === 'rejected').length;
 
             // Calculate total deposit amount from approved deposits
             const approvedDepositsList = deposits.filter(d => d.status === 'approved');
@@ -72,19 +73,19 @@ const Home = () => {
 
             setStats({
                 balance: profile.balance || 0,
-                totalOrders: orders.length,
-                totalSpent: totalSpent,
+                totalOrders: purchaseTxns.length, // Gross orders
+                totalSpent: totalSpent, // Gross spent
                 cardsPurchased: cardsPurchased,
                 totalDeposits: deposits.length,
                 approvedDeposits: approvedDeposits,
                 pendingDeposits: pendingDeposits,
                 depositAmount: totalDepositAmount,
-                completedOrders: orders.length,
+                completedOrders: purchaseTxns.length - refundTxns.length,
                 refundedOrders: refundTxns.length,
                 totalRefunded: totalRefunded,
                 partialOrders: 0,
-                orders: orders, // Store orders for purchases tab
-                deposits: deposits, // Store deposits for deposits tab
+                orders: orders,
+                deposits: deposits,
             });
 
             setLoading(false);
@@ -178,9 +179,19 @@ const Home = () => {
     return (
         <div>
             {/* Header */}
-            <div className="mb-4">
-                <h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-1">Dashboard</h1>
-                <p className="text-sm text-gray-600 dark:text-gray-400">Overview of your account activity and statistics</p>
+            <div className="mb-4 flex items-center justify-between">
+                <div>
+                    <h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-1">Dashboard</h1>
+                    <p className="text-sm text-gray-600 dark:text-gray-400">Overview of your account activity and statistics</p>
+                </div>
+                <button
+                    onClick={fetchDashboardData}
+                    className="p-2 bg-gray-100 dark:bg-dark-card hover:bg-gray-200 dark:hover:bg-dark-hover rounded-full transition-all text-gray-600 dark:text-gray-400 hover:text-blue-500"
+                    title="Refresh Stats"
+                    disabled={loading}
+                >
+                    <RefreshCw size={20} className={loading ? 'animate-spin' : ''} />
+                </button>
             </div>
 
             {/* Tabs */}
@@ -283,8 +294,10 @@ const Home = () => {
                                 <thead className="bg-gray-50 dark:bg-dark-hover border-b border-gray-200 dark:border-dark-border">
                                     <tr>
                                         <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600 dark:text-gray-400 uppercase">Product</th>
+                                        <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600 dark:text-gray-400 uppercase">Country</th>
                                         <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600 dark:text-gray-400 uppercase">BIN</th>
                                         <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600 dark:text-gray-400 uppercase">Brand</th>
+                                        <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600 dark:text-gray-400 uppercase">Type</th>
                                         <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600 dark:text-gray-400 uppercase">Price</th>
                                         <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600 dark:text-gray-400 uppercase">Date</th>
                                     </tr>
@@ -295,11 +308,27 @@ const Home = () => {
                                             <td className="px-4 py-3 text-sm text-gray-900 dark:text-white font-medium capitalize">
                                                 {order.type === 'log' ? 'Account/Log' : order.type === 'bulk' ? 'Bulk/Lot' : order.type}
                                             </td>
+                                            <td className="px-4 py-3 text-sm font-bold text-gray-700 dark:text-gray-300">
+                                                {order.country || 'US'}
+                                            </td>
                                             <td className="px-4 py-3 text-sm font-mono text-blue-500">
                                                 {order.type === 'card' ? order.bin : '--'}
                                             </td>
                                             <td className="px-4 py-3 text-sm text-gray-700 dark:text-gray-300">
-                                                {order.type === 'card' ? order.brand : (order.name || '---')}
+                                                <div className="flex items-center gap-2">
+                                                    {order.type === 'card' ? order.brand : (order.name || '---')}
+                                                    {order.category === 'new' && (
+                                                        <span className="bg-blue-600 text-white text-[8px] px-1 py-0.5 rounded font-bold">NEW</span>
+                                                    )}
+                                                </div>
+                                            </td>
+                                            <td className="px-4 py-3 text-sm">
+                                                <span className={`text-[10px] uppercase font-bold px-1.5 py-0.5 rounded border ${order.batch === 'refundable'
+                                                    ? 'bg-purple-500/10 text-purple-400 border-purple-500/20'
+                                                    : 'bg-slate-700 text-slate-400 border-slate-600'
+                                                    }`}>
+                                                    {order.batch || 'NON-REFUNDABLE'}
+                                                </span>
                                             </td>
                                             <td className="px-4 py-3 text-sm font-bold text-green-500">${order.price}</td>
                                             <td className="px-4 py-3 text-sm text-gray-500">

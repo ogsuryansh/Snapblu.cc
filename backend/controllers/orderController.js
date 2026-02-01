@@ -102,16 +102,12 @@ const refundProduct = asyncHandler(async (req, res) => {
         throw new Error('User who purchased this not found');
     }
 
-    // 1. Add back balance
-    user.balance += product.price;
+    // 1. Add back balance - Use a precise calculation
+    const refundAmount = Number(product.price);
+    user.balance = Math.round((user.balance + refundAmount) * 100) / 100;
     await user.save();
 
-    // 2. Mark Product as UNSOLD or DELETE IT (usually we keep it but marked refunded)
-    // For this app, let's mark it as isSold: false but maybe keep a history?
-    // Actually, usually we just delete the product to clear it from "Sold" lists, 
-    // OR we can add a 'status' field. Since we don't have 'status' on Product, 
-    // let's just mark it isSold: false (restocking it) or mark it something else.
-    // I'll mark it isSold = false and clear soldTo/soldAt.
+    // 2. Mark Product as UNSOLD
     product.isSold = false;
     const oldSoldTo = product.soldTo;
     product.soldTo = undefined;
@@ -122,12 +118,17 @@ const refundProduct = asyncHandler(async (req, res) => {
     await Transaction.create({
         user: oldSoldTo,
         type: 'refund',
-        amount: product.price,
+        amount: refundAmount,
         description: `Refund for ${product.type === 'card' ? 'Card ' + product.bin : 'Log ' + product.name}`,
         status: 'completed'
     });
 
-    res.json({ success: true, message: 'Refund processed successfully' });
+    res.json({
+        success: true,
+        message: 'Refund processed successfully',
+        refundAmount,
+        newBalance: user.balance
+    });
 });
 
 // @desc    Purchase multiple products in bulk
