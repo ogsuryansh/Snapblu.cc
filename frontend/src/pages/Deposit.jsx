@@ -60,8 +60,8 @@ const Deposit = () => {
         e.preventDefault();
         setMessage(null);
 
-        if (Number(amount) < 10) {
-            setMessage({ type: 'error', text: 'Minimum deposit amount is $10' });
+        if (Number(amount) < 5) {
+            setMessage({ type: 'error', text: 'Minimum deposit amount is $5' });
             return;
         }
 
@@ -181,11 +181,11 @@ const Deposit = () => {
                                     <input
                                         type="number"
                                         className="input-field w-full pl-7"
-                                        placeholder="Min 10"
+                                        placeholder="Min 5"
                                         value={amount}
                                         onChange={(e) => setAmount(e.target.value)}
                                         required
-                                        min="10"
+                                        min="5"
                                     />
                                 </div>
                             </div>
@@ -219,7 +219,7 @@ const Deposit = () => {
                             I Have Paid
                         </Button>
                         <p className="text-xs text-center text-gray-400 mt-2">
-                            Min Deposit: <span className="font-bold text-gray-500">$10</span>. Admin approval required.
+                            Min Deposit: <span className="font-bold text-gray-500">$5</span>. Admin approval required.
                         </p>
                     </form>
                 </div>

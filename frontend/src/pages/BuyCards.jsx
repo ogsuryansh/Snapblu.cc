@@ -169,8 +169,8 @@ const BuyCards = () => {
             key: 'batch', label: 'Class',
             render: (row) => (
                 <span className={`text-[10px] uppercase font-bold px-2 py-1 rounded border ${row.batch === 'refundable'
-                        ? 'bg-purple-500/10 text-purple-400 border-purple-500/20'
-                        : 'bg-slate-700 text-slate-400 border-slate-600'
+                    ? 'bg-purple-500/10 text-purple-400 border-purple-500/20'
+                    : 'bg-slate-700 text-slate-400 border-slate-600'
                     }`}>
                     {row.batch || 'NON-REFUNDABLE'}
                 </span>
@@ -180,9 +180,9 @@ const BuyCards = () => {
             key: 'status', label: 'Status',
             render: (row) => {
                 const status = checkResults[row._id];
-                if (status === 'LIVE') return <span className="badge bg-green-500/10 text-green-500 border border-green-500/20">LIVE</span>;
                 if (status === 'DEAD') return <span className="badge bg-red-500/10 text-red-500 border border-red-500/20">DEAD</span>;
-                return <span className="text-slate-500 text-[10px] font-bold uppercase tracking-tighter">UNCHECKED</span>;
+                // Default to LIVE in green as requested
+                return <span className="badge bg-green-500/10 text-green-500 border border-green-500/20">LIVE</span>;
             }
         },
         {

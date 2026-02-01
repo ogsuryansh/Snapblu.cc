@@ -14,9 +14,9 @@ const createDeposit = asyncHandler(async (req, res) => {
         throw new Error('Please provide amount and transaction ID');
     }
 
-    if (amount < 10) {
+    if (amount < 5) {
         res.status(400);
-        throw new Error('Minimum deposit amount is $10');
+        throw new Error('Minimum deposit amount is $5');
     }
 
     const deposit = new Deposit({
