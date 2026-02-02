@@ -7,54 +7,79 @@ import Transaction from '../models/transactionModel.js';
 // @route   POST /api/orders/purchase/:id
 // @access  Private
 const purchaseProduct = asyncHandler(async (req, res) => {
-    const product = await Product.findById(req.params.id);
-    const user = await User.findById(req.user._id);
+    const productId = req.params.id;
 
+    // 1. Pre-fetch check (Optional but good for UX)
+    const product = await Product.findById(productId);
     if (!product) {
         res.status(404);
         throw new Error('Product not found');
     }
-
     if (product.isSold) {
         res.status(400);
         throw new Error('Product is already sold');
     }
 
+    // 2. Check User Balance
+    const user = await User.findById(req.user._id);
     if (user.balance < product.price) {
         res.status(400);
         throw new Error('Insufficient balance. Please deposit funds.');
     }
 
-    // 1. Deduct Balance
-    user.balance -= product.price;
-    await user.save();
+    // 3. Atomic Update: Try to mark as sold. Fails if isSold is already true.
+    const updatedProduct = await Product.findOneAndUpdate(
+        { _id: productId, isSold: false },
+        {
+            $set: {
+                isSold: true,
+                soldTo: user._id,
+                soldAt: Date.now()
+            }
+        },
+        { new: true }
+    );
 
-    // 2. Mark Product as Sold
-    product.isSold = true;
-    product.soldTo = user._id;
-    product.soldAt = Date.now();
-    await product.save();
+    if (!updatedProduct) {
+        res.status(400);
+        throw new Error('Product was just sold to another user. Please try another card.');
+    }
 
-    // 3. Create Transaction Record
-    const description = product.type === 'card'
-        ? `Purchased Card ${product.bin} - ${product.brand}`
-        : `Purchased Log: ${product.name}`;
+    // 4. Deduct Balance
+    // Since we successfully claimed the product, we deduct the balance.
+    try {
+        user.balance -= updatedProduct.price;
+        await user.save();
+    } catch (err) {
+        // Critical error: Product sold but balance bad? 
+        // We should revert the product sale if balance deduction fails (though unlikely if check passed)
+        updatedProduct.isSold = false;
+        updatedProduct.soldTo = undefined;
+        updatedProduct.soldAt = undefined;
+        await updatedProduct.save();
+        res.status(500);
+        throw new Error('Transaction failed. Balance not deducted.');
+    }
+
+    // 5. Create Transaction Record
+    const description = updatedProduct.type === 'card'
+        ? `Purchased Card ${updatedProduct.bin} - ${updatedProduct.brand}`
+        : `Purchased Log: ${updatedProduct.name}`;
 
     await Transaction.create({
         user: user._id,
         type: 'purchase',
-        amount: product.price,
+        amount: updatedProduct.price,
         description: description,
         status: 'completed'
     });
 
-    // 4. Return Product Data (Now revealing the hidden 'data' field)
     res.json({
         success: true,
         message: 'Purchase successful!',
         product: {
-            ...product._doc,
-            data: product.data // This contains the sensistive CC info
+            ...updatedProduct._doc,
+            data: updatedProduct.data
         }
     });
 });
@@ -63,8 +88,6 @@ const purchaseProduct = asyncHandler(async (req, res) => {
 // @route   GET /api/orders/myorders
 // @access  Private
 const getMyOrders = asyncHandler(async (req, res) => {
-    // Find products sold to this user
-    // Sort by soldAt (newest first), fallback to updatedAt for old purchases without soldAt
     const products = await Product.find({ soldTo: req.user._id, isSold: true })
         .sort({ soldAt: -1, updatedAt: -1 });
     res.json(products);
@@ -102,19 +125,16 @@ const refundProduct = asyncHandler(async (req, res) => {
         throw new Error('User who purchased this not found');
     }
 
-    // 1. Add back balance - Use a precise calculation
     const refundAmount = Number(product.price);
     user.balance = Math.round((user.balance + refundAmount) * 100) / 100;
     await user.save();
 
-    // 2. Mark Product as UNSOLD
     product.isSold = false;
     const oldSoldTo = product.soldTo;
     product.soldTo = undefined;
     product.soldAt = undefined;
     await product.save();
 
-    // 3. Create Refund Transaction
     await Transaction.create({
         user: oldSoldTo,
         type: 'refund',
@@ -143,56 +163,76 @@ const purchaseBatch = asyncHandler(async (req, res) => {
         throw new Error('No products selected');
     }
 
-    const products = await Product.find({ _id: { $in: productIds } });
+    // Check availability of ALL items first
+    const productsToCheck = await Product.find({ _id: { $in: productIds } });
 
-    if (products.length !== productIds.length) {
-        res.status(404);
-        throw new Error('Some products were not found');
-    }
-
-    const alreadySold = products.find(p => p.isSold);
+    // Check if any are already sold
+    const alreadySold = productsToCheck.find(p => p.isSold);
     if (alreadySold) {
         res.status(400);
         throw new Error(`Product ${alreadySold.bin || alreadySold.name} is already sold`);
     }
 
-    const totalCost = products.reduce((sum, p) => sum + p.price, 0);
+    const totalCost = productsToCheck.reduce((sum, p) => sum + p.price, 0);
 
     if (user.balance < totalCost) {
         res.status(400);
         throw new Error('Insufficient balance for bulk purchase');
     }
 
-    // 1. Deduct Balance
-    user.balance -= totalCost;
-    await user.save();
-
-    // 2. Mark Products as Sold & Create Transactions
     const purchasedProducts = [];
-    for (const product of products) {
-        product.isSold = true;
-        product.soldTo = user._id;
-        product.soldAt = Date.now();
-        await product.save();
 
-        const description = product.type === 'card'
-            ? `Purchased Card ${product.bin} - ${product.brand} (Bulk)`
-            : `Purchased Log: ${product.name} (Bulk)`;
+    // Process one by one atomically to ensure no partial failures with race conditions
+    // If one fails (sold in between), we charge only for successful ones or fail operation?
+    // Better to attempt to claim all.
 
-        await Transaction.create({
-            user: user._id,
-            type: 'purchase',
-            amount: product.price,
-            description: description,
-            status: 'completed'
-        });
+    let actualTotalCost = 0;
 
-        purchasedProducts.push(product);
+    for (const id of productIds) {
+        const updatedProduct = await Product.findOneAndUpdate(
+            { _id: id, isSold: false },
+            {
+                $set: {
+                    isSold: true,
+                    soldTo: user._id,
+                    soldAt: Date.now()
+                }
+            },
+            { new: true }
+        );
+
+        if (updatedProduct) {
+            purchasedProducts.push(updatedProduct);
+            actualTotalCost += updatedProduct.price;
+
+            // Log Transaction per item or bulk?
+            const description = updatedProduct.type === 'card'
+                ? `Purchased Card ${updatedProduct.bin} - ${updatedProduct.brand} (Bulk)`
+                : `Purchased Log: ${updatedProduct.name} (Bulk)`;
+
+            await Transaction.create({
+                user: user._id,
+                type: 'purchase',
+                amount: updatedProduct.price,
+                description: description,
+                status: 'completed'
+            });
+        }
+        // If failed (already sold), we just skip it.
     }
+
+    if (purchasedProducts.length === 0) {
+        res.status(400);
+        throw new Error('All selected products were sold or unavailable.');
+    }
+
+    // Deduct only for what we actually got
+    user.balance -= actualTotalCost;
+    await user.save();
 
     res.json({
         success: true,
-        message: `${products.length} products purchased successfully!`,
+        message: `${purchasedProducts.length} products purchased successfully!`,
         products: purchasedProducts
     });
 });
