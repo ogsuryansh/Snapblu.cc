@@ -129,11 +129,12 @@ const refundProduct = asyncHandler(async (req, res) => {
     user.balance = Math.round((user.balance + refundAmount) * 100) / 100;
     await user.save();
 
-    product.isSold = false;
+
+
     const oldSoldTo = product.soldTo;
-    product.soldTo = undefined;
-    product.soldAt = undefined;
-    await product.save();
+
+    // Delete the product permanently so it's not added back to stock
+    await Product.deleteOne({ _id: product._id });
 
     await Transaction.create({
         user: oldSoldTo,
