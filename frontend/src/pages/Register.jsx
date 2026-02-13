@@ -19,17 +19,10 @@ const Register = () => {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
     const [success, setSuccess] = useState(false);
-    const [isVerified, setIsVerified] = useState(false);
-    const [isVerifying, setIsVerifying] = useState(false);
 
-    const handleVerify = () => {
-        if (isVerified || isVerifying) return;
-        setIsVerifying(true);
-        setTimeout(() => {
-            setIsVerified(true);
-            setIsVerifying(false);
-        }, 1500);
-    };
+    // Captcha State
+    const [captchaNums, setCaptchaNums] = useState({ num1: Math.floor(Math.random() * 10), num2: Math.floor(Math.random() * 10) });
+    const [captchaAnswer, setCaptchaAnswer] = useState('');
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -52,7 +45,16 @@ const Register = () => {
 
             const { data } = await axios.post(
                 `${API_URL}/api/users`,
-                { username, email, password },
+                {
+                    username,
+                    email,
+                    password,
+                    captcha: {
+                        num1: captchaNums.num1,
+                        num2: captchaNums.num2,
+                        answer: captchaAnswer
+                    }
+                },
                 config
             );
 
@@ -64,6 +66,8 @@ const Register = () => {
             navigate('/dashboard'); // Go straight to dashboard
         } catch (err) {
             setLoading(false);
+            setCaptchaNums({ num1: Math.floor(Math.random() * 10), num2: Math.floor(Math.random() * 10) });
+            setCaptchaAnswer('');
             setError(err.response && err.response.data.message
                 ? err.response.data.message
                 : err.message);
@@ -205,36 +209,29 @@ const Register = () => {
                             </div>
                         </div>
 
-                        {/* Interactive Cloudflare Mock */}
-                        <div
-                            onClick={handleVerify}
-                            className={`bg-[#1a1a1a] border border-[#333] rounded-md p-4 flex items-center justify-between cursor-pointer select-none transition-colors ${!isVerified && 'hover:bg-[#222]'}`}
-                        >
-                            <div className="flex items-center gap-3">
-                                <div className="checkbox-wrapper">
-                                    <div className={`w-7 h-7 border-2 rounded flex items-center justify-center transition-all ${isVerified
-                                        ? 'bg-green-500 border-green-500'
-                                        : 'border-gray-500 bg-transparent'
-                                        }`}>
-                                        {isVerifying ? (
-                                            <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                                        ) : isVerified ? (
-                                            <CheckCircle2 size={18} className="text-white" />
-                                        ) : null}
-                                    </div>
+                        {/* Bot Verification */}
+                        <div className="space-y-2">
+                            <label className="text-sm font-medium text-gray-300">
+                                Verification <span className="text-red-500">*</span>
+                            </label>
+                            <div className="flex items-center gap-4 bg-[#1a1a1a] border border-[#333] rounded-lg p-3">
+                                <div className="text-gray-400 font-mono text-lg select-none">
+                                    What is <span className="text-white font-bold">{captchaNums.num1} + {captchaNums.num2}</span> ?
                                 </div>
-                                <span className="text-sm text-gray-300">
-                                    {isVerified ? 'Success!' : isVerifying ? 'Verifying...' : 'Verify you are human'}
-                                </span>
-                            </div>
-                            <div className="flex flex-col items-end">
-                                <ShieldCheck size={24} className="text-gray-500" />
+                                <input
+                                    type="number"
+                                    placeholder="?"
+                                    value={captchaAnswer}
+                                    onChange={(e) => setCaptchaAnswer(e.target.value)}
+                                    className="w-20 bg-[#111] border border-[#444] rounded px-3 py-2 text-center text-white focus:outline-none focus:border-blue-500 transition-all font-bold"
+                                    required
+                                />
                             </div>
                         </div>
 
                         <button
                             type="submit"
-                            disabled={loading || !isVerified}
+                            disabled={loading || !captchaAnswer}
                             className="w-full bg-white text-black font-bold py-3 rounded-lg hover:bg-gray-200 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
                         >
                             {loading ? (

@@ -53,6 +53,18 @@ const registerUser = asyncHandler(async (req, res) => {
         throw new Error('User already exists');
     }
 
+    // Bot Verification (Simple Math)
+    const { captcha } = req.body;
+    if (!captcha || !captcha.num1 || !captcha.num2 || !captcha.answer) {
+        res.status(400);
+        throw new Error('Please complete the verification challenge');
+    }
+
+    if (Number(captcha.num1) + Number(captcha.num2) !== Number(captcha.answer)) {
+        res.status(400);
+        throw new Error('Verification failed. Math answer is incorrect.');
+    }
+
     const verificationToken = crypto.randomBytes(20).toString('hex');
 
     const user = await User.create({
